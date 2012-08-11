@@ -254,75 +254,165 @@ static int diagchar_close(struct inode *inode, struct file *file)
 static int diagchar_ioctl(struct inode *inode, struct file *filp,
 			   unsigned int iocmd, unsigned long ioarg)
 {
-	int i, j, count_entries = 0, temp;
-	int success = -1;
+	int i, j, temp, success = -1;
+	unsigned int count_entries = 0, interim_count = 0;
+	void *temp_buf;
 
 	if (iocmd == DIAG_IOCTL_COMMAND_REG) {
-		struct bindpkt_params_per_process *pkt_params =
-			 (struct bindpkt_params_per_process *) ioarg;
+		struct bindpkt_params_per_process pkt_params;
+		struct bindpkt_params *params;
+		struct bindpkt_params *head_params;
+		if (copy_from_user(&pkt_params, (void *)ioarg,
+			   sizeof(struct bindpkt_params_per_process))) {
+			return -EFAULT;
+		}
+		if ((UINT32_MAX/sizeof(struct bindpkt_params)) <
+							 pkt_params.count) {
+			pr_alert("diag: integer overflow while multiply\n");
+			return -EFAULT;
+		}
+		params = kzalloc(pkt_params.count*sizeof(
+			struct bindpkt_params), GFP_KERNEL);
+		if (!params) {
+			pr_alert("diag: unable to alloc memory\n");
+			return -ENOMEM;
+		} else
+			head_params = params;
+
+		if (copy_from_user(params, pkt_params.params,
+			   pkt_params.count*sizeof(struct bindpkt_params))) {
+			kfree(head_params);
+			return -EFAULT;
+		}
 
 		for (i = 0; i < diag_max_registration; i++) {
 			if (driver->table[i].process_id == 0) {
 				success = 1;
 				driver->table[i].cmd_code =
-					pkt_params->params->cmd_code;
+					pkt_params.params->cmd_code;
 				driver->table[i].subsys_id =
-					pkt_params->params->subsys_id;
+					pkt_params.params->subsys_id;
 				driver->table[i].cmd_code_lo =
-					pkt_params->params->cmd_code_lo;
+					pkt_params.params->cmd_code_lo;
 				driver->table[i].cmd_code_hi =
-					pkt_params->params->cmd_code_hi;
+					pkt_params.params->cmd_code_hi;
 				driver->table[i].process_id = current->tgid;
 				count_entries++;
-				if (pkt_params->count > count_entries)
-					pkt_params->params++;
-				else
+				if (pkt_params.count > count_entries) {
+					pkt_params.params++;
+				} else {
+					kfree(head_params);
 					return success;
+				}
 			}
 		}
 		if (i < diag_threshold_registration) {
 			/* Increase table size by amount required */
-			diag_max_registration += pkt_params->count -
+			if (pkt_params.count >= count_entries) {
+				interim_count = pkt_params.count -
 							 count_entries;
+			} else {
+				pr_alert("diag: error in params count\n");
+				kfree(head_params);
+				mutex_unlock(&driver->diagchar_mutex);
+				return -EFAULT;
+			}
+			if (UINT32_MAX - diag_max_registration >=
+							interim_count) {
+				diag_max_registration += interim_count;
+			} else {
+				pr_alert("diag: Integer overflow\n");
+				kfree(head_params);
+				mutex_unlock(&driver->diagchar_mutex);
+				return -EFAULT;
+			}
 			/* Make sure size doesnt go beyond threshold */
 			if (diag_max_registration > diag_threshold_registration)
 				diag_max_registration =
 						 diag_threshold_registration;
-			driver->table = krealloc(driver->table,
+			if (UINT32_MAX/sizeof(struct diag_master_table) <
+								 diag_max_registration) {
+				pr_alert("diag: integer overflow\n");
+				kfree(head_params);
+				mutex_unlock(&driver->diagchar_mutex);
+				return -EFAULT;
+			}
+			temp_buf = krealloc(driver->table,
 					 diag_max_registration*sizeof(struct
 					 diag_master_table), GFP_KERNEL);
+			if (!temp_buf) {
+				pr_alert("diag: Insufficient memory for reg.\n");
+				mutex_unlock(&driver->diagchar_mutex);
+
+				if (pkt_params.count >= count_entries) {
+					interim_count = pkt_params.count -
+								 count_entries;
+				} else {
+					pr_alert("diag: params count error\n");
+					mutex_unlock(&driver->diagchar_mutex);
+					kfree(head_params);
+					return -EFAULT;
+				}
+				if (diag_max_registration >= interim_count) {
+					diag_max_registration -= interim_count;
+				} else {
+					pr_alert("diag: Integer underflow\n");
+					mutex_unlock(&driver->diagchar_mutex);
+					kfree(head_params);
+					return -EFAULT;
+				}
+				kfree(head_params);
+				return 0;
+			} else {
+				driver->table = temp_buf;
+			}
 			for (j = i; j < diag_max_registration; j++) {
 				success = 1;
-				driver->table[j].cmd_code = pkt_params->
+				driver->table[j].cmd_code = pkt_params.
 							params->cmd_code;
-				driver->table[j].subsys_id = pkt_params->
+				driver->table[j].subsys_id = pkt_params.
 							params->subsys_id;
-				driver->table[j].cmd_code_lo = pkt_params->
+				driver->table[j].cmd_code_lo = pkt_params.
 							params->cmd_code_lo;
-				driver->table[j].cmd_code_hi = pkt_params->
+				driver->table[j].cmd_code_hi = pkt_params.
 							params->cmd_code_hi;
 				driver->table[j].process_id = current->tgid;
 				count_entries++;
-				if (pkt_params->count > count_entries)
-					pkt_params->params++;
-				else
+				if (pkt_params.count > count_entries) {
+					pkt_params.params++;
+				} else {
+					kfree(head_params);
 					return success;
+				}
 			}
-		} else
+			kfree(head_params);
+			mutex_unlock(&driver->diagchar_mutex);
+		} else {
+			mutex_unlock(&driver->diagchar_mutex);
+			kfree(head_params);
 			pr_err("Max size reached, Pkt Registration failed for"
 						" Process %d", current->tgid);
-
+		}
 		success = 0;
 	} else if (iocmd == DIAG_IOCTL_GET_DELAYED_RSP_ID) {
-		struct diagpkt_delay_params *delay_params =
-					(struct diagpkt_delay_params *) ioarg;
-
-		if ((delay_params->rsp_ptr) &&
-		 (delay_params->size == sizeof(delayed_rsp_id)) &&
-				 (delay_params->num_bytes_ptr)) {
-			*((uint16_t *)delay_params->rsp_ptr) =
-				DIAGPKT_NEXT_DELAYED_RSP_ID(delayed_rsp_id);
-			*(delay_params->num_bytes_ptr) = sizeof(delayed_rsp_id);
+		struct diagpkt_delay_params delay_params;
+		uint16_t interim_rsp_id;
+		int interim_size;
+		if (copy_from_user(&delay_params, (void *)ioarg,
+					   sizeof(struct diagpkt_delay_params)))
+			return -EFAULT;
+		if ((delay_params.rsp_ptr) &&
+		 (delay_params.size == sizeof(delayed_rsp_id)) &&
+				 (delay_params.num_bytes_ptr)) {
+			interim_rsp_id = DIAGPKT_NEXT_DELAYED_RSP_ID(
+							delayed_rsp_id);
+			if (copy_to_user((void *)delay_params.rsp_ptr,
+					 &interim_rsp_id, sizeof(uint16_t)))
+				return -EFAULT;
+			interim_size = sizeof(delayed_rsp_id);
+			if (copy_to_user((void *)delay_params.num_bytes_ptr,
+						 &interim_size, sizeof(int)))
+				return -EFAULT;
 			success = 0;
 		}
 	} else if (iocmd == DIAG_IOCTL_LSM_DEINIT) {
@@ -598,6 +688,12 @@ static int diagchar_write(struct file *file, const char __user *buf,
 	/*First 4 bytes indicate the type of payload - ignore these */
 	payload_size = count - 4;
 
+	if (payload_size > USER_SPACE_DATA) {
+		pr_err("diag: Dropping packet, packet payload size crosses 8KB limit. Current payload size %d\n",
+				payload_size);
+		driver->dropped_count++;
+		return -EBADMSG;
+	}
 	if (pkt_type == MEMORY_DEVICE_LOG_TYPE) {
 		if (!mask_request_validate((unsigned char *)buf)) {
 			printk(KERN_ALERT "mask request Invalid ..cannot send to modem \n");

@@ -42,6 +42,7 @@
 #define USB_MAX_OUT_BUF 4096
 #define IN_BUF_SIZE		16384
 #define MAX_IN_BUF_SIZE	32768
+#define UINT32_MAX	UINT_MAX
 /* Size of the buffer used for deframing a packet
   reveived from the PC tool*/
 #define HDLC_MAX 4096
@@ -57,6 +58,7 @@
 #define MSG_MASK_SIZE 8000
 #define LOG_MASK_SIZE 8000
 #define EVENT_MASK_SIZE 1000
+#define USER_SPACE_DATA 8000
 #define PKT_SIZE 4096
 #define MAX_EQUIP_ID 12
 /* This is the maximum number of pkt registrations supported at initialization*/
