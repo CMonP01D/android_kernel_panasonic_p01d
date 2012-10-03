@@ -364,7 +364,7 @@ static int msm_timer_set_next_event(unsigned long cycles,
 	}
 	now = msm_read_timer_count(clock, LOCAL_TIMER);
 	clock_state->last_set = now;
-	clock_state->alarm_vtime = alarm + clock_state->sleep_offset;
+	clock_state->alarm_vtime = round_jiffies(alarm + clock_state->sleep_offset);
 	late = now - alarm;
 	if (late >= (int)(-clock->write_delay << clock->shift) &&
 	    late < clock->freq*5)
