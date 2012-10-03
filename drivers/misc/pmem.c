@@ -2681,8 +2681,8 @@ static long pmem_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 			struct pmem_region region;
 			DLOG("flush\n");
 			if (copy_from_user(&region, (void __user *)arg,
-				sizeof(struct pmem_region)))
-			    return -EFAULT;
+			sizeof(struct pmem_region)))
+			return -EFAULT;
 			flush_pmem_file(file, region.offset, region.len);
 			break;
 		}

@@ -48,6 +48,8 @@
  * struct (with offset set to 0). 
  */
 #define PMEM_GET_TOTAL_SIZE	_IOW(PMEM_IOCTL_MAGIC, 7, unsigned int)
+#define PMEM_CACHE_FLUSH	_IOW(PMEM_IOCTL_MAGIC, 8, unsigned int)
+
 /* Revokes gpu registers and resets the gpu.  Pass a pointer to the
  * start of the mapped gpu regs (the vaddr returned by mmap) as the argument.
  */
