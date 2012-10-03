@@ -36,7 +36,6 @@ config IOSCHED_CFQ
 
 	  Note: If BLK_CGROUP=m, then CFQ can be built only as module.
 
-
 config IOSCHED_BFQ
 	tristate "BFQ I/O scheduler"
 	depends on EXPERIMENTAL
@@ -64,6 +63,13 @@ config CFQ_GROUP_IOSCHED
 	default n
 	---help---
 	  Enable group IO scheduling in CFQ.
+
+config IOSCHED_VR
+	tristate "V(R) I/O scheduler"
+	default y
+	---help---
+	  Requests are chosen according to SSTF with a penalty of rev_penalty
+	  for switching head direction.
 
 choice
 	prompt "Default I/O scheduler"
