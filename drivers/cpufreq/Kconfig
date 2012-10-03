@@ -123,6 +123,13 @@ config CPU_FREQ_DEFAULT_GOV_LAGFREE
           governor. If unsure have a look at the help section of the
           driver. Fallback governor will be the performance governor.
 
+config CPU_FREQ_DEFAULT_GOV_BRAZILIANWAX
+	bool "brazilianwax"
+	select CPU_FREQ_GOV_BRAZILIANWAX
+	select CPU_FREQ_GOV_PERFORMANCE
+	help
+	    Use the CPUFreq governor 'brazilianwax as default.
+
 endchoice
 
 config CPU_FREQ_GOV_PERFORMANCE
@@ -233,5 +240,10 @@ config CPU_FREQ_GOV_LAGFREE
 
           If in doubt, say N.
 
+config CPU_FREQ_GOV_BRAZILIANWAX
+	tristate "'brazilianwax' cpufreq governor"
+	depends on CPU_FREQ
+	help
+	   'brazilianwax' - a "slightly more agressive smart" optimized governor!
 
 endif	# CPU_FREQ
