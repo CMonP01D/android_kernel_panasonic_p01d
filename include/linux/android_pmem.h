@@ -1,7 +1,7 @@
 /* include/linux/android_pmem.h
  *
  * Copyright (C) 2007 Google, Inc.
- * Copyright (c) 2009-2010, Code Aurora Forum. All rights reserved.
+ * Copyright (c) 2009-2011, Code Aurora Forum. All rights reserved.
  *
  * This software is licensed under the terms of the GNU General Public
  * License version 2, as published by the Free Software Foundation, and
@@ -158,6 +158,8 @@ struct android_pmem_platform_data
 	unsigned buffered;
 	/* This PMEM is on memory that may be powered off */
 	unsigned unstable;
+	/* which memory type (i.e. SMI, EBI1) this PMEM device is backed by */
+	unsigned memory_type;
 	/*
 	 * function to be called when the number of allocations goes from
 	 * 0 -> 1
