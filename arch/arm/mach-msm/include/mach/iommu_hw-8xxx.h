@@ -8,11 +8,6 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301, USA.
  */
 
 #ifndef __ARCH_ARM_MACH_MSM_IOMMU_HW_8XXX_H
@@ -62,8 +57,9 @@ do { \
 #define FL_TYPE_TABLE		(1 << 0)
 #define FL_TYPE_SECT		(2 << 0)
 #define FL_SUPERSECTION		(1 << 18)
-#define FL_AP_WRITE		(1 << 10)
-#define FL_AP_READ		(1 << 11)
+#define FL_AP0			(1 << 10)
+#define FL_AP1			(1 << 11)
+#define FL_AP2			(1 << 15)
 #define FL_SHARED		(1 << 16)
 #define FL_BUFFERABLE		(1 << 2)
 #define FL_CACHEABLE		(1 << 3)
@@ -78,6 +74,7 @@ do { \
 #define SL_TYPE_SMALL		(2 << 0)
 #define SL_AP0			(1 << 4)
 #define SL_AP1			(2 << 4)
+#define SL_AP2			(1 << 9)
 #define SL_SHARED		(1 << 10)
 #define SL_BUFFERABLE		(1 << 2)
 #define SL_CACHEABLE		(1 << 3)
