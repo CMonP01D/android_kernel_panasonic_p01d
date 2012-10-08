@@ -364,10 +364,10 @@ static void otg_pm_qos_update_latency(struct msm_otg *dev, int vote)
 		swfi_latency = pdata->swfi_latency + 1;
 
 	if (vote)
-		pm_qos_update_request(pdata->pm_qos_req_dma,
+		pm_qos_update_request(&pdata->pm_qos_req_dma,
 				swfi_latency);
 	else
-		pm_qos_update_request(pdata->pm_qos_req_dma,
+		pm_qos_update_request(&pdata->pm_qos_req_dma,
 				PM_QOS_DEFAULT_VALUE);
 }
 
@@ -2497,7 +2497,7 @@ static int __init msm_otg_probe(struct platform_device *pdev)
 	clk_set_rate(dev->hs_clk, 60000000);
 
 	/* pm qos request to prevent apps idle power collapse */
-	dev->pdata->pm_qos_req_dma = pm_qos_add_request(PM_QOS_CPU_DMA_LATENCY,
+	pm_qos_add_request(&dev->pdata->pm_qos_req_dma, PM_QOS_CPU_DMA_LATENCY,
 					PM_QOS_DEFAULT_VALUE);
 
 	/* If USB Core is running its protocol engine based on PCLK,
@@ -2839,11 +2839,11 @@ static int __exit msm_otg_remove(struct platform_device *pdev)
 	if (dev->pdata->rpc_connect)
 		dev->pdata->rpc_connect(0);
 	msm_xo_put(dev->xo_handle);
+	pm_qos_remove_request(&dev->pdata->pm_qos_req_dma);
 
 	pm_runtime_put(&pdev->dev);
 	pm_runtime_disable(&pdev->dev);
 	kfree(dev);
-	pm_qos_remove_request(dev->pdata->pm_qos_req_dma);
 	clk_put(dev->pclk_src);
 	return 0;
 }
