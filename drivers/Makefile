@@ -116,3 +116,5 @@ obj-$(CONFIG_STAGING)		+= staging/
 obj-y				+= platform/
 obj-y				+= ieee802154/
 obj-$(CONFIG_TSIF)		+= dtvtuner/
+#common clk code
+obj-y				+= clk/
