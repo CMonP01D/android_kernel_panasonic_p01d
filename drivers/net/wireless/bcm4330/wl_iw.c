@@ -72,9 +72,7 @@ typedef const struct si_pub  si_t;
 bool g_set_essid_before_scan = TRUE;
 #endif
 
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 25)) && 1
-	struct mutex  g_wl_ss_scan_lock; /* lock/unlock for ISCAN cache settings */
-#endif 
+struct mutex  g_wl_ss_scan_lock; /* lock/unlock for ISCAN cache settings */
 
 #if defined(SOFTAP)
 
@@ -110,7 +108,6 @@ static int		g_onoff = G_WLAN_SET_ON;
 wl_iw_extra_params_t	g_wl_iw_params;
 
 
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 25)) && 1
 /* 
  * wl_start_lock to replace MUTEX_LOCK[dhd.h]/dhd_pub_t::wl_start_stop_lock[dhd.h]
  * wl_cache_lock  to replace MUTEX_LOCK_WL_SCAN_SET[dhd.h]/g_wl_ss_scan_lock[wl_iw.c]
@@ -122,14 +119,6 @@ static struct mutex	wl_softap_lock;
 #define DHD_OS_MUTEX_INIT(a) mutex_init(a)
 #define DHD_OS_MUTEX_LOCK(a) mutex_lock(a)
 #define DHD_OS_MUTEX_UNLOCK(a) mutex_unlock(a)
-
-#else
-
-#define DHD_OS_MUTEX_INIT(a)
-#define DHD_OS_MUTEX_LOCK(a)
-#define DHD_OS_MUTEX_UNLOCK(a)
-
-#endif 
 
 #include <bcmsdbus.h>
 extern void dhd_customer_gpio_wlan_ctrl(int onoff);
@@ -173,18 +162,9 @@ static volatile uint g_first_counter_scans;
 //static wlc_ssid_t g_ssids[WL_SCAN_PARAMS_SSID_MAX];  /* Keep track of cached ssid */
 
 
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 0))
 #define DAEMONIZE(a) daemonize(a); \
 	allow_signal(SIGKILL); \
 	allow_signal(SIGTERM);
-#else /* Linux 2.4 (w/o preemption patch) */
-#define RAISE_RX_SOFTIRQ() \
-	cpu_raise_softirq(smp_processor_id(), NET_RX_SOFTIRQ)
-#define DAEMONIZE(a) daemonize(); \
-	do { if (a) \
-		strncpy(current->comm, a, MIN(sizeof(current->comm), (strlen(a) + 1))); \
-	} while (0);
-#endif /* LINUX_VERSION_CODE  */
 
 #if defined(WL_IW_USE_ISCAN)
 #if  !defined(CSCAN)
@@ -363,11 +343,7 @@ dev_wlc_ioctl(
 
 		fs = get_fs();
 		set_fs(get_ds());
-#if LINUX_VERSION_CODE <= KERNEL_VERSION(2, 6, 31)
-		ret = dev->do_ioctl(dev, &ifr, SIOCDEVPRIVATE);
-#else
 		ret = dev->netdev_ops->ndo_do_ioctl(dev, &ifr, SIOCDEVPRIVATE);
-#endif /* LINUX_VERSION_CODE < KERNEL_VERSION(2, 6, 31) */
 		set_fs(fs);
 	}
 	else {
@@ -494,11 +470,7 @@ dev_wlc_bufvar_set(
 	char *name,
 	char *buf, int len)
 {
-#if LINUX_VERSION_CODE < KERNEL_VERSION(2, 6, 31)
-	char ioctlbuf[MAX_WLIW_IOCTL_LEN];
-#else
 	static char ioctlbuf[MAX_WLIW_IOCTL_LEN];
-#endif /* LINUX_VERSION_CODE < KERNEL_VERSION(2, 6, 31) */
 	uint buflen;
 
 	buflen = bcm_mkiovar(name, buf, len, ioctlbuf, sizeof(ioctlbuf));
@@ -518,11 +490,7 @@ dev_wlc_bufvar_get(
 	char *name,
 	char *buf, int buflen)
 {
-#if LINUX_VERSION_CODE < KERNEL_VERSION(2, 6, 31)
-	char ioctlbuf[MAX_WLIW_IOCTL_LEN];
-#else
 	static char ioctlbuf[MAX_WLIW_IOCTL_LEN];
-#endif /* LINUX_VERSION_CODE < KERNEL_VERSION(2, 6, 31) */
 	int error;
 	uint len;
 
@@ -2843,15 +2811,11 @@ static void
 wl_iw_force_specific_scan(iscan_info_t *iscan)
 {
 	WL_TRACE(("%s force Specific SCAN for %s\n", __FUNCTION__, g_specific_ssid.SSID));
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 27))
 	rtnl_lock();
-#endif
 
 	(void) dev_wlc_ioctl(iscan->dev, WLC_SCAN, &g_specific_ssid, sizeof(g_specific_ssid));
 
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 27))
 	rtnl_unlock();
-#endif
 }
 
 static void
@@ -2902,13 +2866,9 @@ _iscan_sysioc_thread(void *data)
 			del_timer_sync(&iscan->timer);
 		}
 
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 27))
 		rtnl_lock();
-#endif
 		status = wl_iw_iscan_get(iscan);
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 27))
 		rtnl_unlock();
-#endif
 
 	if  (g_scan_specified_ssid && (iscan_pass_abort == TRUE)) {
 		WL_TRACE(("%s Get results from specific scan status=%d\n", __FUNCTION__, status));
@@ -2920,14 +2880,10 @@ _iscan_sysioc_thread(void *data)
 		switch (status) {
 			case WL_SCAN_RESULTS_PARTIAL:
 				WL_TRACE(("iscanresults incomplete\n"));
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 27))
 				rtnl_lock();
-#endif
 				/* make sure our buffer size is enough before going next round */
 				wl_iw_iscan(iscan, NULL, WL_SCAN_ACTION_CONTINUE);
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 27))
 				rtnl_unlock();
-#endif
 				/* Reschedule the timer */
 				mod_timer(&iscan->timer, jiffies + iscan->timer_ms*HZ/1000);
 				iscan->timer_on = 1;
@@ -3353,10 +3309,8 @@ wl_iw_iscan_set_scan_broadcast_prep(struct net_device *dev, uint flag)
 		return 0;
 	}
 
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 27))
 	if (flag)
 		rtnl_lock();
-#endif
 
 	dev_wlc_ioctl(dev, WLC_SET_PASSIVE_SCAN, &iscan->scan_flag, sizeof(iscan->scan_flag));
 	wl_iw_set_event_mask(dev);
@@ -3372,10 +3326,8 @@ wl_iw_iscan_set_scan_broadcast_prep(struct net_device *dev, uint flag)
 	wl_iw_iscan_prep(&iscan->iscan_ex_params_p->params, &ssid);
 	wl_iw_iscan(iscan, &ssid, WL_SCAN_ACTION_START);
 
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 27))
 	if (flag)
 		rtnl_unlock();
-#endif
 
 	mod_timer(&iscan->timer, jiffies + iscan->timer_ms*HZ/1000);
 
@@ -4746,11 +4698,9 @@ wl_iw_set_encode(
 		case WEP128_KEY_SIZE:
 			key.algo = CRYPTO_ALGO_WEP128;
 			break;
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 14)
 		case TKIP_KEY_SIZE:
 			key.algo = CRYPTO_ALGO_TKIP;
 			break;
-#endif
 		case AES_KEY_SIZE:
 			key.algo = CRYPTO_ALGO_AES_CCM;
 			break;
@@ -6074,11 +6024,7 @@ thr_wait_for_2nd_eth_dev(void *data)
 
 	WL_TRACE(("%s thread started:, PID:%x\n", __FUNCTION__, current->pid));
 
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 27))
 	if (down_timeout(&ap_eth_sema,  msecs_to_jiffies(5000)) != 0) {
-#else
-	if (down_interruptible(&ap_eth_sema) != 0) {
-#endif /* LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 27) */
 		WL_ERROR(("\n%s: sap_eth_sema timeout \n", __FUNCTION__));
 		ret = -1;
 		goto fail;
@@ -8114,9 +8060,7 @@ wl_iw_bt_flag_set(
 	char buf_flag7_dhcp_on[8] = { 7, 00, 00, 00, 0x1, 0x00, 0x00, 0x00 };
 	char buf_flag7_default[8] = { 7, 00, 00, 00, 0x0, 0x00, 0x00, 0x00 };
 
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 27))
 	rtnl_lock();
-#endif
 
 	if (set == TRUE) {
 		/* Forcing bt_flag7  */
@@ -8128,9 +8072,7 @@ wl_iw_bt_flag_set(
 		                   (char *)&buf_flag7_default[0], sizeof(buf_flag7_default));
 	}
 
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 27))
 	rtnl_unlock();
-#endif
 }
 
 static void

@@ -41,7 +41,7 @@
 #include <dngl_stats.h>
 #include <dhd.h>
 
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 27)) && defined(CONFIG_PM_SLEEP)
+#if defined(CONFIG_PM_SLEEP)
 #include <linux/suspend.h>
 extern volatile bool dhd_mmc_suspend;
 #endif
@@ -677,10 +677,7 @@ sdioh_enable_hw_oob_intr(sdioh_info_t *sd, bool enable)
 	else
 		data = 4;	/* disable hw oob interrupt */
 
-#if 1 && LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 35)
-	/* Needed for Android Linux Kernel 2.6.35 */
 	data |= 4; 		/* Active HIGH */
-#endif /* OEM_ANDROID */
 
 	status = sdioh_request_byte(sd, SDIOH_WRITE, 0, 0xf2, &data);
 	return status;

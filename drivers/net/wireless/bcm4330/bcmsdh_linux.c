@@ -54,9 +54,7 @@ extern void dhdsdio_isr(void * args);
 #define BCMPLATFORM_BUS
 #endif /* !defined(BCMPLATFORM_BUS) */
 
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 19))
 #include <linux/platform_device.h>
-#endif /* KERNEL_VERSION(2, 6, 19) */
 #endif /* CONFIG_MACH_SANDGATE2G || CONFIG_MACH_LOGICPD_PXA270 */
 
 /**
@@ -345,9 +343,6 @@ static struct pci_driver bcmsdh_pci_driver = {
 	id_table:	bcmsdh_pci_devid,
 	probe:		bcmsdh_pci_probe,
 	remove:		bcmsdh_pci_remove,
-#if (LINUX_VERSION_CODE < KERNEL_VERSION(2, 6, 0))
-	save_state:	NULL,
-#endif
 	suspend:	NULL,
 	resume:		NULL,
 	};
@@ -552,13 +547,8 @@ bcmsdh_register(bcmsdh_driver_t *driver)
 #endif /* defined(BCMPLATFORM_BUS) */
 
 #if !defined(BCMPLATFORM_BUS) && !defined(BCMLXSDMMC)
-#if (LINUX_VERSION_CODE < KERNEL_VERSION(2, 6, 0))
-	if (!(error = pci_module_init(&bcmsdh_pci_driver)))
-		return 0;
-#else
 	if (!(error = pci_register_driver(&bcmsdh_pci_driver)))
 		return 0;
-#endif
 
 	SDLX_MSG(("%s: pci_module_init failed 0x%x\n", __FUNCTION__, error));
 #endif /* BCMPLATFORM_BUS */
@@ -571,12 +561,8 @@ extern void sdio_function_cleanup(void);
 void
 bcmsdh_unregister(void)
 {
-#if (LINUX_VERSION_CODE < KERNEL_VERSION(2, 6, 0))
-	if (bcmsdh_pci_driver.node.next)
-#endif
-
 #if defined(BCMPLATFORM_BUS) && !defined(BCMLXSDMMC)
-		driver_unregister(&bcmsdh_driver);
+	driver_unregister(&bcmsdh_driver);
 #endif
 #if defined(BCMLXSDMMC)
 	sdio_function_cleanup();

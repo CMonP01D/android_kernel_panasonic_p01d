@@ -439,9 +439,6 @@ osl_pktfastget(osl_t *osh, uint len)
 
 	skb->len = 0;
 	skb->cloned = 0;
-#if LINUX_VERSION_CODE < KERNEL_VERSION(2, 6, 14)
-	skb->list = NULL;
-#endif
 	atomic_set(&skb->users, 1);
 
 	return skb;
@@ -491,11 +488,7 @@ osl_pktfastfree(osl_t *osh, struct sk_buff *skb)
 	ASSERT(ctfpool->curr_obj <= ctfpool->max_obj);
 	spin_unlock_bh(&ctfpool->lock);
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 14)
 	skb->tstamp.tv.sec = 0;
-#else
-	skb->stamp.tv_sec = 0;
-#endif
 
 	/* We only need to init the fields that we change */
 	skb->dev = NULL;
