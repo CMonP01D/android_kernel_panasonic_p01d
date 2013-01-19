@@ -94,6 +94,7 @@ static void atmel_ts_late_resume(struct early_suspend *h);
 #endif
 
 static void multi_input_report(struct atmel_ts_data *ts);
+static void charge_tp_power(struct atmel_ts_data *ts);
 
 //[simt-zhanghui-110817]{
 #define TP_RESUME    2012
@@ -1068,6 +1069,8 @@ static void atmel_ts_work_func(struct work_struct *work)
 		input_sync(ts->input_dev);
 	}
 
+	charge_tp_power(ts);
+
 	enable_irq(ts->client->irq);
 }
 
@@ -1320,9 +1323,7 @@ static int atmel_ts_probe(struct i2c_client *client,
 				get_object_address(ts, GEN_COMMANDPROCESSOR_T6),
 				pdata->config_T6,	get_object_size(ts, GEN_COMMANDPROCESSOR_T6));
 
-			i2c_atmel_write(ts->client,
-				get_object_address(ts, GEN_POWERCONFIG_T7),
-				pdata->config_T7,	get_object_size(ts, GEN_POWERCONFIG_T7));
+			charge_tp_power(ts);
 			
 			i2c_atmel_write(ts->client,
 				get_object_address(ts, GEN_ACQUISITIONCONFIG_T8),
@@ -1563,6 +1564,13 @@ static int atmel_ts_suspend(struct i2c_client *client, pm_message_t mesg)
 	return 0;
 }
 
+static void charge_tp_power(struct atmel_ts_data *ts)
+{
+	i2c_atmel_write(ts->client,
+			get_object_address(ts, GEN_POWERCONFIG_T7),
+			ts->config_setting.config_T7,get_object_size(ts, GEN_POWERCONFIG_T7));
+}
+
 static int atmel_ts_resume(struct i2c_client *client)
 {
 	struct atmel_ts_data *ts = i2c_get_clientdata(client);
@@ -1585,9 +1593,7 @@ static int atmel_ts_resume(struct i2c_client *client)
 	}
 
     /*charge tp power again.*/
-	i2c_atmel_write(ts->client,
-		get_object_address(ts, GEN_POWERCONFIG_T7),
-		ts->config_setting.config_T7,get_object_size(ts, GEN_POWERCONFIG_T7));
+	charge_tp_power(ts);
 
 		i2c_atmel_write_byte_data(client,
 			get_object_address(ts, GEN_COMMANDPROCESSOR_T6) +
