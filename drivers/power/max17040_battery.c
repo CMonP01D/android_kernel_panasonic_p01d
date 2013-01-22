@@ -452,8 +452,8 @@ static int max17040_get_property(struct power_supply *psy,
 /*********************************************************/
 int boot_complete = 0;
 struct i2c_client * max17040_client;
-#define GAUGE_SOC_PATH      "/system/etc/gauge.soc"
-#define GAUGE_VCELL_PATH      "/system/etc/gauge.vcell"
+#define GAUGE_SOC_PATH      "/data/system/battery/gauge.soc"
+#define GAUGE_VCELL_PATH      "/data/system/battery/gauge.vcell"
 #define  MAX17040_FILE_OPTION_SUCCESS       0
 #define  MAX17040_ABS(x)        ((x>=0)?x:(0-x))
 #define MAX17040_SOC_ERROR      7680 //capacity 15%
