@@ -1069,8 +1069,6 @@ static void atmel_ts_work_func(struct work_struct *work)
 		input_sync(ts->input_dev);
 	}
 
-	charge_tp_power(ts);
-
 	enable_irq(ts->client->irq);
 }
 
