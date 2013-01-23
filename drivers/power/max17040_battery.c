@@ -119,7 +119,6 @@ static int max17040_get_soc(struct i2c_client *client)
 	lsb = max17040_read_reg(client, MAX17040_SOC_LSB);
     
 	chip->soc = (int)((msb * 256) + lsb); //(int)(((msb * 256) + lsb) * 0.001953125
-	printk("max17040_get_soc <%d> \n",chip->soc);
        return chip->soc;
 }
 
@@ -495,7 +494,6 @@ static int max17040_write_file(struct file *file , int raw_data)
 	set_fs(KERNEL_DS);
 	pos = 0;
 	file->f_op->write(file, buff, sizeof(buff), &pos);   
-	printk("max17040 :the buff is %s\n", buff);
 	filp_close(file, NULL);
 	set_fs(old_fs); 
 	//printk("this fun is %s\n", __func__);
