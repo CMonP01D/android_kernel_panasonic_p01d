@@ -9430,6 +9430,8 @@ void msm_wakeup_mb86a29(void)
 	udelay(100);
 }
 
+EXPORT_SYMBOL(msm_wakeup_mb86a29);
+
 void msm_waitmode_mb86a29(void)
 {
 

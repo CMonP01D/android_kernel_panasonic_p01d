@@ -1,7 +1,7 @@
 #
 # Automatically generated make config: don't edit
 # Linux kernel version: 2.6.35.11
-# Tue Jan 15 20:01:37 2013
+# Wed Jan 23 07:40:44 2013
 #
 CONFIG_ARM=y
 CONFIG_SYS_SUPPORTS_APM_EMULATION=y
@@ -2427,7 +2427,7 @@ CONFIG_ZRAM=y
 #
 # PMC MB86A29T 1seg DTV Tuner
 #
-CONFIG_DTVTUNER_DRIVER=y
+CONFIG_DTVTUNER_DRIVER=m
 
 #
 # File systems
