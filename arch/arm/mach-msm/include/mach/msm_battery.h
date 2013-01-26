@@ -33,6 +33,7 @@
 
 #define AC_CHG     0x00000001
 #define USB_CHG    0x00000002
+#define MSM_BATTERY_FULL 4170
 
 struct msm_psy_batt_pdata {
 	u32 voltage_max_design;

@@ -103,8 +103,7 @@ struct timeval charger_time_val;
 #define BATTERY_CB_ID_LOW_VOL		2
 
 #define BATTERY_LOW		3500
-#define BATTERY_HIGH		4350
-#define BATTERY_FULL                4170 //[SIMT-liyueyi-20110825]
+#define BATTERY_HIGH		MSM_BATTERY_FULL
 
 #define ONCRPC_CHG_GET_GENERAL_STATUS_PROC	12
 #define ONCRPC_CHARGER_API_VERSIONS_PROC	0xffffffff
@@ -777,6 +776,10 @@ static void msm_batt_update_psy_status(void)
 			battery_status = BATTERY_STATUS_INVALID;
 	}
 
+	printk("BATT: charger_status v1: %u\n", charger_status);
+	printk("BATT: charger_status into: %u\n", msm_batt_info.charger_status);
+	printk("BATT: battery_voltate: %u\n", rep_batt_chg.v1.battery_voltage);
+
 	if (charger_status == msm_batt_info.charger_status &&
 	    charger_type == msm_batt_info.charger_type &&
 	    battery_status == msm_batt_info.battery_status &&
@@ -1092,8 +1095,8 @@ void msm_batt_early_suspend(struct early_suspend *h)
         if(msm_batt_info.batt_status == POWER_SUPPLY_STATUS_CHARGING)
         {
 		rc = msm_batt_modify_client(msm_batt_info.batt_handle,
-				BATTERY_FULL, BATTERY_VOLTAGE_ABOVE_THIS_LEVEL,
-			       BATTERY_CB_ID_ALL_ACTIV, BATTERY_FULL);        
+				MSM_BATTERY_FULL, BATTERY_VOLTAGE_ABOVE_THIS_LEVEL,
+			       BATTERY_CB_ID_ALL_ACTIV, MSM_BATTERY_FULL);
         }
         else
         {
@@ -1523,7 +1526,7 @@ static u32 msm_batt_capacity(u32 current_voltage)
 		return 100;
 	else
 		return (current_voltage - low_voltage) * 100
-			/ (high_voltage - low_voltage - 100);
+			/ (high_voltage - low_voltage);
 }
 
 #ifndef CONFIG_BATTERY_MSM_FAKE
