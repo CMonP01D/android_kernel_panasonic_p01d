@@ -201,6 +201,18 @@ static struct vreg *vreg_wlan2;
 static struct vreg *vreg_gp5;
 #endif
 
+void bcm_wlan_power_off(int flag)
+{
+	gpio_direction_output(126, 0);
+}
+EXPORT_SYMBOL(bcm_wlan_power_off);
+
+void bcm_wlan_power_on(int flag)
+{
+	gpio_direction_output(126, 1);
+}
+EXPORT_SYMBOL(bcm_wlan_power_on);
+
 //Add by TaoYuan 2011.3.25
 //#define BCM4330_DEBUG 5
 void BCM4330_PowerOn(void)

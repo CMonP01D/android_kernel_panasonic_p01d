@@ -127,7 +127,6 @@ dhd_customer_gpio_wlan_ctrl(int onoff)
 #ifdef CUSTOMER_HW
 			bcm_wlan_power_off(2);
 #endif /* CUSTOMER_HW */
-            gpio_direction_output(126,0);
 
 #ifdef CONFIG_MACH_MAHIMAHI
 			wifi_set_power(0, 0);
@@ -144,8 +143,6 @@ dhd_customer_gpio_wlan_ctrl(int onoff)
 #ifdef CONFIG_MACH_MAHIMAHI
 			wifi_set_power(1, 0);
 #endif
-            gpio_direction_output(126, 1);
-            msleep(100);
 			WL_ERROR(("=========== WLAN going back to live  ========\n"));
 		break;
 
@@ -155,8 +152,6 @@ dhd_customer_gpio_wlan_ctrl(int onoff)
 #ifdef CUSTOMER_HW
 			bcm_wlan_power_off(1);
 #endif /* CUSTOMER_HW */
-            msleep(100);
-            gpio_direction_output (126, 0);
 		break;
 
 		case WLAN_POWER_ON:
@@ -165,8 +160,6 @@ dhd_customer_gpio_wlan_ctrl(int onoff)
 #ifdef CUSTOMER_HW
 			bcm_wlan_power_on(1);
 #endif /* CUSTOMER_HW */
-            msleep(100);
-            gpio_direction_output (126, 1);
 			/* Lets customer power to get stable */
             msleep(500);
 		break;
