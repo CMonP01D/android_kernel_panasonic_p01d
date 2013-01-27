@@ -7270,6 +7270,16 @@ static void __init bt_power_init(void)
 #define bt_power_init(x) do {} while (0)
 #endif
 
+extern struct wifi_platform_data bcm4330_wifi_control;
+static struct platform_device bcm4330_wifi_device = {
+	.name           = "bcmdhd_wlan",
+	.id             = 1,
+	.dev            = {
+		.platform_data = &bcm4330_wifi_control,
+	},
+};
+
+
 static struct msm_psy_batt_pdata msm_psy_batt_data = {
 	.voltage_min_design 	= 3500,
 	.voltage_max_design	= MSM_BATTERY_FULL,
@@ -7462,6 +7472,7 @@ static struct platform_device *devices[] __initdata = {
 #if defined(CONFIG_MARIMBA_CORE) && \
    (defined(CONFIG_MSM_BT_POWER) || defined(CONFIG_MSM_BT_POWER_MODULE))
 	&msm_bt_power_device,
+	&bcm4330_wifi_device,
 #endif
 #ifdef CONFIG_MT9T013
 	&msm_camera_sensor_mt9t013,

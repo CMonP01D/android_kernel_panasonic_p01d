@@ -75,27 +75,15 @@ int __init bcm4330_init_wifi_mem(void)
 	return 0;
 }
 
-static struct wifi_platform_data bcm4330_wifi_control = {
+struct wifi_platform_data bcm4330_wifi_control = {
 	.mem_prealloc	= bcm4330_wifi_mem_prealloc,
 };
 
-static struct platform_device bcm4330_wifi_device = {
-        .name           = "bcmdhd_wlan",
-        .id             = 1,
-        .dev            = {
-                .platform_data = &bcm4330_wifi_control,
-        },
-};
-
-
 static int __init bcm4330_wifi_init(void)
 {
-	int ret;
-
 	printk("%s: start\n", __func__);
 	bcm4330_init_wifi_mem();
-	ret = platform_device_register(&bcm4330_wifi_device);
-    return ret;
+    return 0;
 }
 
 late_initcall(bcm4330_wifi_init);
