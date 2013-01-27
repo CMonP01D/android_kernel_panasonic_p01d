@@ -5852,6 +5852,27 @@ static void bl_config_gpios(void)
 	}
 }
 
+static void wlan_config_gpios(void)
+{
+	int rc;
+	uint32_t wlan_reg_on = GPIO_CFG(126,
+			0,
+			GPIO_CFG_OUTPUT,
+			GPIO_CFG_NO_PULL,
+			GPIO_CFG_4MA);
+	rc = gpio_tlmm_config(wlan_reg_on, GPIO_CFG_ENABLE);
+	if (rc) {
+		pr_err("%s: gpio_tlmm_config(%#x)=%d\n",__func__, wlan_reg_on, rc);
+		return;
+	}
+
+	rc = gpio_request(126, "wlan_reg_on");
+	if (rc) {
+		pr_err("%s: unable to request gpio %d (%d)\n",
+				__func__, 126, rc);
+	}
+}
+
 static struct resource msm_bl_resources[] = {
 	{
 		.name	= "ctrl",
@@ -9763,14 +9784,6 @@ static void __init msm7x30_init(void)
         };
        #endif
 	//chenping add for ponyo usb bug 20110711 end
-        //+ Yuhaipeng 20110506
-        uint32_t wlan_reg_on = GPIO_CFG(126,
-                       0,
-                       GPIO_CFG_OUTPUT,
-                       GPIO_CFG_NO_PULL,
-                       GPIO_CFG_4MA);
-        //- Yuhaipeng 20110506
-
 	if (socinfo_init() < 0)
 		printk(KERN_ERR "%s: socinfo_init() failed!\n",
 		       __func__);
@@ -9789,23 +9802,7 @@ static void __init msm7x30_init(void)
 
 	msm_clock_init(msm_clocks_7x30, msm_num_clocks_7x30);
 
-        //+ Yuhaipeng 20110506
-        rc = gpio_tlmm_config(wlan_reg_on, GPIO_CFG_ENABLE);
-        if (rc)
-            pr_err("%s: gpio_tlmm_config(%#x)=%d\n",__func__, wlan_reg_on, rc);
-
-        rc = gpio_request(126, "wlan_reg_on");
-        if (rc) {
-            pr_err("%s: unable to request gpio %d (%d)\n",
-                __func__, 126, rc);
-        }
-#if 0
-        rc = gpio_direction_output(126, 1);
-        if (rc < 0) {
-            printk(KERN_ERR "%s: gpio_direction_output failed (%d)\n", __func__, rc);
-                                    }
-#endif
-        //- Yuhaipeng 20110506
+	wlan_config_gpios();
 #ifdef CONFIG_PONYO
 	msm_config_mb86a29();
 #endif
