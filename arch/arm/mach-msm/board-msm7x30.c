@@ -9804,7 +9804,6 @@ static void __init msm7x30_init(void)
 
 	msm_clock_init(msm_clocks_7x30, msm_num_clocks_7x30);
 
-	wlan_config_gpios();
 #ifdef CONFIG_PONYO
 	msm_config_mb86a29();
 #endif
@@ -9894,6 +9893,7 @@ static void __init msm7x30_init(void)
 #endif
 
     bl_config_gpios();
+	wlan_config_gpios();
 
     msm_gpios_request_enable(
         headset_key_data, 
