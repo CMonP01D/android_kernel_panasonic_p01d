@@ -198,9 +198,14 @@ sdioh_detach(osl_t *osh, sdioh_info_t *sd)
 		sdio_release_host(gInstance->func[2]);
 
 		/* Disable Function 1 */
-		sdio_claim_host(gInstance->func[1]);
-		sdio_disable_func(gInstance->func[1]);
-		sdio_release_host(gInstance->func[1]);
+		if (gInstance->func[1]) {
+			sdio_claim_host(gInstance->func[1]);
+			sdio_disable_func(gInstance->func[1]);
+			sdio_release_host(gInstance->func[1]);
+		}
+
+		gInstance->func[1] = NULL;
+		gInstance->func[2] = NULL;
 
 		/* deregister irq */
 		sdioh_sdmmc_osfree(sd);
@@ -793,41 +798,49 @@ sdioh_request_byte(sdioh_info_t *sd, uint rw, uint func, uint regaddr, uint8 *by
 #if defined(MMC_SDIO_ABORT)
 			/* to allow abort command through F1 */
 			else if (regaddr == SDIOD_CCCR_IOABORT) {
-				sdio_claim_host(gInstance->func[func]);
-				/*
-				* this sdio_f0_writeb() can be replaced with another api
-				* depending upon MMC driver change.
-				* As of this time, this is temporaray one
-				*/
-				sdio_writeb(gInstance->func[func], *byte, regaddr, &err_ret);
-				sdio_release_host(gInstance->func[func]);
+				if (gInstance->func[func]) {
+					sdio_claim_host(gInstance->func[func]);
+					/*
+					* this sdio_f0_writeb() can be replaced with another api
+					* depending upon MMC driver change.
+					* As of this time, this is temporaray one
+					*/
+					sdio_writeb(gInstance->func[func], *byte, regaddr, &err_ret);
+					sdio_release_host(gInstance->func[func]);
+				}
 			}
 #endif /* MMC_SDIO_ABORT */
 			else if (regaddr < 0xF0) {
 				sd_err(("bcmsdh_sdmmc: F0 Wr:0x%02x: write disallowed\n", regaddr));
 			} else {
 				/* Claim host controller, perform F0 write, and release */
-				sdio_claim_host(gInstance->func[func]);
-				sdio_f0_writeb(gInstance->func[func], *byte, regaddr, &err_ret);
-				sdio_release_host(gInstance->func[func]);
+				if (gInstance->func[func]) {
+					sdio_claim_host(gInstance->func[func]);
+					sdio_f0_writeb(gInstance->func[func], *byte, regaddr, &err_ret);
+					sdio_release_host(gInstance->func[func]);
+				}
 			}
 		} else {
 			/* Claim host controller, perform Fn write, and release */
-			sdio_claim_host(gInstance->func[func]);
-			sdio_writeb(gInstance->func[func], *byte, regaddr, &err_ret);
-			sdio_release_host(gInstance->func[func]);
+			if (gInstance->func[func]) {
+				sdio_claim_host(gInstance->func[func]);
+				sdio_writeb(gInstance->func[func], *byte, regaddr, &err_ret);
+				sdio_release_host(gInstance->func[func]);
+			}
 		}
 	} else { /* CMD52 Read */
 		/* Claim host controller, perform Fn read, and release */
-		sdio_claim_host(gInstance->func[func]);
+		if (gInstance->func[func]) {
+			sdio_claim_host(gInstance->func[func]);
 
-		if (func == 0) {
-			*byte = sdio_f0_readb(gInstance->func[func], regaddr, &err_ret);
-		} else {
-			*byte = sdio_readb(gInstance->func[func], regaddr, &err_ret);
+			if (func == 0) {
+				*byte = sdio_f0_readb(gInstance->func[func], regaddr, &err_ret);
+			} else {
+				*byte = sdio_readb(gInstance->func[func], regaddr, &err_ret);
+			}
+
+			sdio_release_host(gInstance->func[func]);
 		}
-
-		sdio_release_host(gInstance->func[func]);
 	}
 
 	if (err_ret) {
