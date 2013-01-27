@@ -220,9 +220,6 @@ EXPORT_SYMBOL(bcm_wlan_power_on);
 void BCM4330_PowerOn(void)
 {
   printk(KERN_ERR "BCM4330_DEBUG:starting to power init!!\n");
-  gpio_set_value(127, 0);
-  gpio_set_value(128, 0);
-  msleep(1);
   gpio_set_value(127, 1);
   msleep(100);
   gpio_set_value(128, 1);
