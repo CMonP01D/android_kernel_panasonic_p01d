@@ -148,6 +148,8 @@
 #define PMIC_GPIO_HDMI_5V_EN_V3 32  /* PMIC GPIO for V3 H/W */
 #define PMIC_GPIO_HDMI_5V_EN_V2 39 /* PMIC GPIO for V2 H/W */
 
+#define WIFI_GPIO_ENABLE 126
+
 #define ADV7520_I2C_ADDR	0x39
 
 #define FPGA_SDCC_STATUS       0x8E0001A8
@@ -203,13 +205,13 @@ static struct vreg *vreg_gp5;
 
 void bcm_wlan_power_off(int flag)
 {
-	gpio_direction_output(126, 0);
+	gpio_direction_output(WIFI_GPIO_ENABLE, 0);
 }
 EXPORT_SYMBOL(bcm_wlan_power_off);
 
 void bcm_wlan_power_on(int flag)
 {
-	gpio_direction_output(126, 1);
+	gpio_direction_output(WIFI_GPIO_ENABLE, 1);
 }
 EXPORT_SYMBOL(bcm_wlan_power_on);
 
@@ -5855,7 +5857,7 @@ static void bl_config_gpios(void)
 static void wlan_config_gpios(void)
 {
 	int rc;
-	uint32_t wlan_reg_on = GPIO_CFG(126,
+	uint32_t wlan_reg_on = GPIO_CFG(WIFI_GPIO_ENABLE,
 			0,
 			GPIO_CFG_OUTPUT,
 			GPIO_CFG_NO_PULL,
@@ -5866,10 +5868,10 @@ static void wlan_config_gpios(void)
 		return;
 	}
 
-	rc = gpio_request(126, "wlan_reg_on");
+	rc = gpio_request(WIFI_GPIO_ENABLE, "wlan_reg_on");
 	if (rc) {
 		pr_err("%s: unable to request gpio %d (%d)\n",
-				__func__, 126, rc);
+				__func__, WIFI_GPIO_ENABLE, rc);
 	}
 }
 
