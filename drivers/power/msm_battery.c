@@ -865,9 +865,15 @@ static void msm_batt_update_psy_status(void)
 		/* Correct charger status */
 		if (charger_type != CHARGER_TYPE_INVALID &&
 		    charger_status == CHARGER_STATUS_GOOD) {
-			DBG_LIMIT("BATT: In charging\n");
-			msm_batt_info.batt_status =
-				POWER_SUPPLY_STATUS_CHARGING;
+			if (battery_voltage < MSM_BATTERY_FULL) {
+				DBG_LIMIT("BATT: In charging\n");
+				msm_batt_info.batt_status =
+					POWER_SUPPLY_STATUS_CHARGING;
+			} else {
+				DBG_LIMIT("BATT: Full\n");
+				msm_batt_info.batt_status =
+					POWER_SUPPLY_STATUS_FULL;
+			}
 		}
 	}
 #ifdef SIMCUST_BATT
