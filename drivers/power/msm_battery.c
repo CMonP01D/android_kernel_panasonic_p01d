@@ -405,11 +405,7 @@ static int msm_batt_power_get_property(struct power_supply *psy,
 		val->intval = msm_batt_info.voltage_min_design;
 		break;
 	case POWER_SUPPLY_PROP_VOLTAGE_NOW:
-#ifndef CONFIG_BATTERY_MSM_FAKE
-		val->intval = msm_batt_get_vbatt_voltage();
-#else
 		val->intval = msm_batt_info.battery_voltage;
-#endif
 		break;
 	case POWER_SUPPLY_PROP_CAPACITY:
 		val->intval = msm_batt_capacity(msm_batt_get_vbatt_voltage());
