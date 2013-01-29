@@ -203,15 +203,22 @@ static struct vreg *vreg_wlan2;
 static struct vreg *vreg_gp5;
 #endif
 
+#define WL_REG_ON 1
+#define WLAN_RESET 2
+
 void bcm_wlan_power_off(int flag)
 {
-	gpio_direction_output(WIFI_GPIO_ENABLE, 0);
+	if (flag == WL_REG_ON) {
+		gpio_direction_output(WIFI_GPIO_ENABLE, 0);
+	}
 }
 EXPORT_SYMBOL(bcm_wlan_power_off);
 
 void bcm_wlan_power_on(int flag)
 {
-	gpio_direction_output(WIFI_GPIO_ENABLE, 1);
+	if (flag == WL_REG_ON) {
+		gpio_direction_output(WIFI_GPIO_ENABLE, 1);
+	}
 }
 EXPORT_SYMBOL(bcm_wlan_power_on);
 
