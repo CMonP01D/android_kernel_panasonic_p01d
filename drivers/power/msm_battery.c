@@ -408,7 +408,7 @@ static int msm_batt_power_get_property(struct power_supply *psy,
 		val->intval = msm_batt_info.battery_voltage;
 		break;
 	case POWER_SUPPLY_PROP_CAPACITY:
-		val->intval = msm_batt_info.calculate_capacity(msm_batt_get_vbatt_voltage());
+		val->intval = msm_batt_info.calculate_capacity(msm_batt_info.battery_voltage);
 		break;
 #ifdef SIMCUST_BATT	/*temperature for CIT */
 	case POWER_SUPPLY_PROP_TEMP:
