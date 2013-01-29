@@ -147,8 +147,6 @@ static int tpmsg_close(struct inode *inode, struct file *file)
 	printk(KERN_INFO "<atmel.c> %s\n",__FUNCTION__);	
 	return 0;
 }
-extern void reset_max17040(void); //[SIMT-liyueyi-20110916] for reset gauge ic
-#define RESET_MAX17040  17040
 static int tpmsg_ioctl(struct inode *inode, struct file *file, unsigned int cmd, unsigned long arg)
 {
 	int err = 0;
@@ -162,10 +160,6 @@ static int tpmsg_ioctl(struct inode *inode, struct file *file, unsigned int cmd,
 			err = atmel_ts_fake_resume();
 			printk(KERN_INFO "tp msg ioctrl cmd(ATMELTP_SET_PARA) enter.\n");
 			break;
-             case RESET_MAX17040:
-                     reset_max17040();
-                     return 1;
-                     break;
 		default:
 			printk(KERN_INFO "tp msg ioctrl cmd error\n");
 			break;
