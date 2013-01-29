@@ -772,10 +772,6 @@ static void msm_batt_update_psy_status(void)
 			battery_status = BATTERY_STATUS_INVALID;
 	}
 
-	printk("BATT: charger_status v1: %u\n", charger_status);
-	printk("BATT: charger_status into: %u\n", msm_batt_info.charger_status);
-	printk("BATT: battery_voltate: %u\n", rep_batt_chg.v1.battery_voltage);
-
 	if (charger_status == msm_batt_info.charger_status &&
 	    charger_type == msm_batt_info.charger_type &&
 	    battery_status == msm_batt_info.battery_status &&
