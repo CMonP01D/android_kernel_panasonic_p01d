@@ -516,13 +516,19 @@ static void lcdc_lg4573_panel_set_backlight(struct msm_fb_data_type *mfd)
 	if (bl_level && panel_on) {
 		if (!bl_on) {
 			msleep(200);
+#ifdef CONFIG_BACKLIGHT_CHARGE_PUMP
 			ChargePumpPowerOn();
+#endif
 			bl_on = true;
 		}
+#ifdef CONFIG_BACKLIGHT_CHARGE_PUMP
 		ChargePumpSetDispLightLv(bl_level);
 		// ChargePumpTest();
+#endif
 	} else {
+#ifdef CONFIG_BACKLIGHT_CHARGE_PUMP
 		ChargePumpPowerOff();
+#endif
 		bl_on = false;
 	}
 }
@@ -627,8 +633,10 @@ static int __devinit lg4573_probe(struct platform_device *pdev)
     	pwm_enable(bl_pwm);
     }    
 #endif
+#ifdef CONFIG_BACKLIGHT_CHARGE_PUMP
     ChargePumpPowerOn();
-#ifndef CONFIG_BIGBANG_BACKLIGHT
+#endif
+#ifdef CONFIG_BACKLIGHT_CHARGE_PUMP
     ChargePumpSetDispLightLv(50);
 #endif
 	msm_fb_dev = msm_fb_add_device(pdev);
