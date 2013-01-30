@@ -5884,6 +5884,7 @@ static void wlan_config_gpios(void)
 	}
 }
 
+#ifdef CONFIG_BACKLIGHT_KTD259
 static struct resource msm_bl_resources[] = {
 	{
 		.name	= "ctrl",
@@ -5898,7 +5899,9 @@ static struct platform_device msm_bl_device = {
 	.num_resources	= ARRAY_SIZE(msm_bl_resources),
 	.resource	= msm_bl_resources,
 };
+#endif
 
+#ifdef CONFIG_BACKLIGHT_CHARGE_PUMP
 static struct resource msm_charge_pump_resources[] = {
 	{
 		.name	= "ctrl",
@@ -5913,6 +5916,7 @@ static struct platform_device msm_charge_pump_device = {
 	.num_resources	= ARRAY_SIZE(msm_charge_pump_resources),
 	.resource	= msm_charge_pump_resources,
 };
+#endif
 
 static int display_common_power(int on)
 {
@@ -7481,8 +7485,12 @@ static struct platform_device *devices[] __initdata = {
 	&msm_device_gpio_i2c_cm3623,
 #endif 
 	//[SIMT-caoxiangteng-110715]}
+#ifdef CONFIG_BACKLIGHT_KTD259
     &msm_bl_device,
+#endif
+#ifdef CONFIG_BACKLIGHT_CHARGE_PUMP
     &msm_charge_pump_device,
+#endif
 	&lcdc_lg4573_panel_device,
 
 
