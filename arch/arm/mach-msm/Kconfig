@@ -263,6 +263,14 @@ config MACH_MSM7X30_FLUID
        help
          Support for the Qualcomm MSM7x30 FLUID eval board.
 
+config MACH_PANASONIC_P01D
+      depends on ARCH_MSM7X30
+      depends on !MSM_STACKED_MEMORY
+      default n
+      bool "Panasonic P-01D"
+      help
+      Support for the Panasonic Mobile P-01D devices.
+
 config MACH_SAPPHIRE
 	depends on ARCH_MSM7X01A
 	default n
