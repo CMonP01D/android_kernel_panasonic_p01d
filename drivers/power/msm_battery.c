@@ -20,7 +20,7 @@
  * this needs to be before <linux/kernel.h> is loaded,
  * and <linux/sched.h> loads <linux/kernel.h>
  */
-#define DEBUG  1
+#define DEBUG  0
 
 #include <linux/slab.h>
 #include <linux/earlysuspend.h>
@@ -425,7 +425,7 @@ static int msm_batt_power_get_property(struct power_supply *psy,
 	       val->intval = msm_batt_info.batt_id;
 		break;
        case POWER_SUPPLY_PROP_CHARGE_OVP:   //[SIMCOM-liyueyi-20111008]
-              printk("++++++++++++gpio 42 : %d \n",gpio_get_value(42));
+              DBG_LIMIT("++++++++++++gpio 42 : %d \n",gpio_get_value(42));
               val->intval = gpio_get_value(CHARGE_OVP_GPIO); 
               break;
 #endif
@@ -514,7 +514,6 @@ static s32 msm_batt_get_vbatt_temprature(void)
 		pr_err("%s: FAIL: vbatt get volt. rc=%d\n", __func__, rc);
 		return 0;
 	}
-	printk(KERN_ERR"[DEBUG_LYY]BATT: %s = %d\n",__func__,rep.battery_temprature);
 	
 	return rep.battery_temprature;
 }
@@ -783,14 +782,14 @@ static void msm_batt_update_psy_status(void)
 		 */
 		unnecessary_event_count++;
 		if ((unnecessary_event_count % 20) == 1)
-			printk("BATT: same event count = %u\n",
+			DBG_LIMIT("BATT: same event count = %u\n",
 				 unnecessary_event_count);
 		return;
 	}
 
 	unnecessary_event_count = 0;
 
-	printk("BATT: rcvd: %d, %d, %d, %d; %d, %d\n",
+	DBG_LIMIT("BATT: rcvd: %d, %d, %d, %d; %d, %d\n",
 		 charger_status, charger_type, battery_status,
 		 battery_level, battery_voltage, battery_temp);
 
