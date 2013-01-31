@@ -49,7 +49,7 @@ typedef const struct si_pub  si_t;
 #include <dngl_stats.h>
 #include <dhd.h>
 #define WL_ERROR(x) printf x
-#define WL_TRACE(x) 
+#define WL_TRACE(x)  printk x
 #define WL_ASSOC(x)
 #define WL_INFORM(x)
 #define WL_WSEC(x)
@@ -636,6 +636,7 @@ wl_iw_set_country(
 	int country_offset;
 	int country_code_size;
 
+	return 0;
 	memset(country_code, 0, sizeof(country_code));
 
 	/* Search for the country code */
