@@ -1,7 +1,7 @@
 #
 # Automatically generated make config: don't edit
 # Linux kernel version: 2.6.35.11
-# Wed Jan 30 20:27:04 2013
+# Thu Jan 31 19:43:20 2013
 #
 CONFIG_ARM=y
 CONFIG_SYS_SUPPORTS_APM_EMULATION=y
@@ -1207,6 +1207,8 @@ CONFIG_WLAN=y
 CONFIG_LIBRA_SDIOIF=m
 # CONFIG_BCM4329 is not set
 CONFIG_BCM4330=m
+CONFIG_BCM4330_FW_PATH="/etc/firmware/wlan/sdio_cit.bin"
+CONFIG_BCM4330_NVRAM_PATH="/etc/firmware/wlan/nvram.txt"
 # CONFIG_HOSTAP is not set
 
 #

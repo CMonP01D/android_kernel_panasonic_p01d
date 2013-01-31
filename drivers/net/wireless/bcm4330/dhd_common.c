@@ -161,16 +161,16 @@ dhd_common_init(osl_t *osh)
 	memset(cmn, 0, sizeof(dhd_cmn_t));
 	cmn->osh = osh;
 
-#ifdef CONFIG_BCM4329_FW_PATH
-	strncpy(fw_path, CONFIG_BCM4329_FW_PATH, MOD_PARAM_PATHLEN-1);
-#else /* CONFIG_BCM4329_FW_PATH */
+#ifdef CONFIG_BCM4330_FW_PATH
+	strncpy(fw_path, CONFIG_BCM4330_FW_PATH, MOD_PARAM_PATHLEN-1);
+#else /* CONFIG_BCM4330_FW_PATH */
 	fw_path[0] = '\0';
-#endif /* CONFIG_BCM4329_FW_PATH */
-#ifdef CONFIG_BCM4329_NVRAM_PATH
-	strncpy(nv_path, CONFIG_BCM4329_NVRAM_PATH, MOD_PARAM_PATHLEN-1);
-#else /* CONFIG_BCM4329_NVRAM_PATH */
+#endif /* CONFIG_BCM4330_FW_PATH */
+#ifdef CONFIG_BCM4330_NVRAM_PATH
+	strncpy(nv_path, CONFIG_BCM4330_NVRAM_PATH, MOD_PARAM_PATHLEN-1);
+#else /* CONFIG_BCM4330_NVRAM_PATH */
 	nv_path[0] = '\0';
-#endif /* CONFIG_BCM4329_NVRAM_PATH */
+#endif /* CONFIG_BCM4330_NVRAM_PATH */
 	return cmn;
 }
 
