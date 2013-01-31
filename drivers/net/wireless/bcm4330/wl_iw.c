@@ -636,11 +636,6 @@ wl_iw_set_country(
 	int country_offset;
 	int country_code_size;
 
-    //[SIMT-yuhaipeng-110804]{
-    printk("%s:Ignore country set from Android.\n",__func__);
-    return 0;
-    //[SIMT-yuhaipeng-110804]}
-
 	memset(country_code, 0, sizeof(country_code));
 
 	/* Search for the country code */
