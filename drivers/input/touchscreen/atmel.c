@@ -960,18 +960,11 @@ static void atmel_ts_work_func(struct work_struct *work)
 	struct atmel_ts_data *ts = container_of(work, struct atmel_ts_data, work);
 	uint8_t data[7];
 	int8_t report_type;
-	uint8_t loop_i, loop_j, msg_byte_num = 7;
 
 	memset(data, 0x0, sizeof(data));
 
 	ret = i2c_atmel_read(ts->client, get_object_address(ts,
 		GEN_MESSAGEPROCESSOR_T5), data, 7);
-
-	if (ts->debug_log_level & 0x1) {
-		for (loop_i = 0; loop_i < 7; loop_i++)
-			printk("0x%2.2X ", data[loop_i]);
-		printk("\n");
-	}
 
 	if (ts->id->version >= 0x15)
 	{
@@ -991,61 +984,13 @@ static void atmel_ts_work_func(struct work_struct *work)
 				{
 					check_calibration(ts);
 				}
-				//annie add end 0810
-				printk(KERN_INFO "Touch Status: ");
-				msg_byte_num = 5;
-				//[simt-zhanghui-110817]{
-				#if TEST_LOG
-				{
-					sd_open();
-					sd_seek();
-					sd_write("TS:");
-					sd_close();
-				}
-				#endif
-				//[simt-zhanghui-110817]}
 			} 
 			else if (data[MSG_RID] == get_rid(ts, PROCI_GRIPFACESUPPRESSION_T20))
 			{
 				if (ts->Recal_flag< 2 && ts->id->version == 0x16)
 					check_calibration(ts);
 				ts->face_suppression = data[T20_MSG_STATUS];
-				printk(KERN_INFO "Touch Face suppression %s: ",
-					ts->face_suppression ? "Active" : "Inactive");
-				msg_byte_num = 2;
 			} 
-			else if (data[MSG_RID] == get_rid(ts, PROCG_NOISESUPPRESSION_T22)) 
-			{
-				if (data[T22_MSG_STATUS] == T22_MSG_STATUS_GCAFCHG) /* reduce message print */
-					msg_byte_num = 0;
-				else {
-					printk(KERN_INFO "Touch Noise suppression: ");
-					msg_byte_num = 4;
-				}
-			}
-			if (data[MSG_RID] != 0xFF) 
-			{
-				for (loop_j = 0; loop_j < msg_byte_num; loop_j++){
-					printk("0x%2.2X ", data[loop_j]);
-					//add. [simt-zhanghui-110817]{		
-					#if TEST_LOG
-					{
-						sd_open();
-						sd_seek();
-						char* mydata = NULL;
-						mydata = kzalloc(10,GFP_KERNEL);
-						memset(mydata, 0, 10);
-						sprintf(mydata, "%x", data[loop_j]);
-						sd_write(mydata);
-						kfree(mydata);
-						sd_close();
-					}
-					#endif
-					//[simt-zhanghui-110817]}
-				}
-				if (msg_byte_num)
-					printk("\n");
-			}
 		}
 		if (!ts->finger_count || ts->face_suppression)
 		{
