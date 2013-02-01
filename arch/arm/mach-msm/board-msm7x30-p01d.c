@@ -218,6 +218,13 @@ void bcm_wlan_power_on(int flag)
 {
 	if (flag == WL_REG_ON) {
 		gpio_direction_output(WIFI_GPIO_ENABLE, 1);
+	} else {
+		gpio_direction_output(WIFI_GPIO_ENABLE, 1);
+		msleep(100);
+		gpio_direction_output(WIFI_GPIO_ENABLE, 0);
+		msleep(100);
+		gpio_direction_output(WIFI_GPIO_ENABLE, 1);
+		msleep(100);
 	}
 }
 EXPORT_SYMBOL(bcm_wlan_power_on);
