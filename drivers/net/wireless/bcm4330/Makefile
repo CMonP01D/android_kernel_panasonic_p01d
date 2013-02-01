@@ -4,7 +4,10 @@ DHDCFLAGS = -DLINUX -DBCMDRIVER -DBCMDONGLEHOST -DUNRELEASEDCHIP      \
   -DDHD_GPL -DDHD_SCHED -DSDTEST -DBDC -DTOE -DDHD_BCMEVENTS          \
   -DSHOW_EVENTS -DDONGLEOVERLAYS -DBCMSDIO -DDHD_GPL -DBCMLXSDMMC     \
   -DBCMPLATFORM_BUS -DSDIO_ISR_THREAD -DWIFI_ACT_FRAME -DCUSTOMER_HW  \
-	-Idrivers/net/wireless/bcm4330 -Idrivers/net/wireless/bcm4330/include
+  -Dlinux -Wall -Wstrict-prototypes -Werror -DDHD_SDALIGN=64 -DWLP2P  \
+  -DMAX_HDR_READ=64 -DDHD_FIRSTREAD=64 -DPKT_FILTER_SUPPORT -DHW_OOB  \
+  -DMMC_SDIO_ABORT DMACH_MAHIMAHI -Idrivers/net/wireless/bcm4330      \
+  -Idrivers/net/wireless/bcm4330/include
 
 DHDOFILES =         \
   dhd_linux.o       \
