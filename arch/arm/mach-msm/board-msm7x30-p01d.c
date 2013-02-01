@@ -5824,17 +5824,6 @@ static int display_common_power(int on)
 			return rc;
 		}
 
-        //del [simt-zhanghui-110811]{
-        /*if (other_mddi_client) {
-			rc = vreg_disable(vreg_ldo16);
-			if (rc) {
-				pr_err("%s: LDO16 vreg disable failed (%d)\n",
-					   __func__, rc);
-				return rc;
-			}
-		}*/
-        //[simt-zhanghui-110811]}
-
 		if (quickvx_mddi_client && !quickvx_ldo_enabled) {
 			/* Enable LDO6 during display OFF for
 			   Quicklogic chip to sleep with data retention */
@@ -5872,15 +5861,6 @@ static int display_common_power(int on)
 		}
 
 		mdelay(5);	/* ensure power is stable */
-
-        //[simt-zhanghui-110811]{
-        /*rc = vreg_disable(vreg_ldo12);
-		if (rc) {
-			pr_err("%s: LDO12 vreg disable failed (%d)\n",
-			       __func__, rc);
-			return rc;
-		}*/
-        //[simt-zhanghui-110811]}
 		
 		if (machine_is_msm7x30_fluid()) {
 			msm_gpios_disable_free(fluid_vee_reset_gpio,
@@ -5922,15 +5902,6 @@ static int msm_fb_mddi_client_power(u32 client_id)
 				   __func__, rc);
 			return rc;
 		}
-        //del [simt-zhanghui-110811]{
-        /*rc = vreg_disable(vreg_ldo16);
-		if (rc) {
-			pr_err("%s: LDO16 vreg enable failed (%d)\n",
-				   __func__, rc);
-			return rc;
-		}*/
-        //del [simt-zhanghui-110811]}
-		
 	} else {
 		printk(KERN_NOTICE "\n Non-Quicklogic MDDI client");
 		quickvx_mddi_client = 0;
@@ -7901,9 +7872,6 @@ static void __init msm7x30_init_nand(void)
 
 #ifdef CONFIG_SERIAL_MSM_CONSOLE
 static struct msm_gpio uart2_config_data[] = {
-// wanggang commented for ponyo irda 20110403 
-//	{ GPIO_CFG(49, 2, GPIO_CFG_OUTPUT,  GPIO_CFG_PULL_DOWN, GPIO_CFG_2MA), "UART2_RFR"},
-//	{ GPIO_CFG(50, 2, GPIO_CFG_INPUT,   GPIO_CFG_PULL_DOWN, GPIO_CFG_2MA), "UART2_CTS"},
 	{ GPIO_CFG(51, 2, GPIO_CFG_INPUT,   GPIO_CFG_PULL_DOWN, GPIO_CFG_2MA), "UART2_Rx"},
 	{ GPIO_CFG(52, 2, GPIO_CFG_OUTPUT,  GPIO_CFG_PULL_DOWN, GPIO_CFG_2MA), "UART2_Tx"},
 };
@@ -7915,13 +7883,11 @@ static void msm7x30_init_uart2(void)
 
 }
 #endif
-/* wanggang add for ponyo irda 20110403 start */
+
 #ifdef CONFIG_USE_IRDA
 static struct msm_gpio uart2dm_b_config_data[] = {
        { GPIO_CFG(85, 3, GPIO_CFG_INPUT, GPIO_CFG_NO_PULL, GPIO_CFG_2MA), "UART2DM_RX_DATA_B"},
        { GPIO_CFG(87, 3, GPIO_CFG_OUTPUT, GPIO_CFG_NO_PULL, GPIO_CFG_2MA), "UART2DM_TX_DATA_B"},
-       //{ GPIO_CFG(88, 2, GPIO_CFG_INPUT, GPIO_CFG_PULL_UP, GPIO_CFG_2MA), "UART2DM_CTS_N_B"},
-       //{ GPIO_CFG(89, 3, GPIO_CFG_OUTPUT, GPIO_CFG_PULL_UP, GPIO_CFG_2MA), "UART2DM_RFR_N_B"},
 };
 
 #define UART2DM_BASE_PHYS         0xA3200000
