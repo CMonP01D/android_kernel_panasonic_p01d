@@ -4465,11 +4465,6 @@ static struct msm_gpio dtv_panel_gpios[] = {
 };
 
 
-#ifdef HDMI_RESET
-static unsigned dtv_reset_gpio =
-	GPIO_CFG(37, 0, GPIO_CFG_OUTPUT, GPIO_CFG_NO_PULL, GPIO_CFG_2MA);
-#endif
-
 static int gpio_set(const char *label, const char *name, int level, int on)
 {
 	struct vreg *vreg = vreg_get(NULL, label);
@@ -4583,21 +4578,6 @@ static int dtv_panel_power(int on)
 	dtv_power_save_on = flag_on;
 	pr_info("%s: %d\n", __func__, on);
 
-#ifdef HDMI_RESET
-	if (on) {
-		/* reset Toshiba WeGA chip -- toggle reset pin -- gpio_180 */
-		rc = gpio_tlmm_config(dtv_reset_gpio, GPIO_CFG_ENABLE);
-		if (rc) {
-			pr_err("%s: gpio_tlmm_config(%#x)=%d\n",
-				       __func__, dtv_reset_gpio, rc);
-			return rc;
-		}
-
-		/* bring reset line low to hold reset*/
-		gpio_set_value(37, 0);
-	}
-#endif
-
 	if (on) {
 		rc = msm_gpios_enable(dtv_panel_gpios,
 				ARRAY_SIZE(dtv_panel_gpios));
@@ -4617,13 +4597,6 @@ static int dtv_panel_power(int on)
 	}
 
 	mdelay(5);		/* ensure power is stable */
-
-#ifdef HDMI_RESET
-	if (on) {
-		gpio_set_value(37, 1);	/* bring reset line high */
-		mdelay(10);		/* 10 msec before IO can be accessed */
-	}
-#endif
 
 	return rc;
 }
