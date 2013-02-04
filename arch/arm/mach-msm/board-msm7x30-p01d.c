@@ -81,8 +81,6 @@
 //#include <linux/Atmel.h>
 #include <linux/atmel_ctp.h>
 
-#define MAXX 480
-#define MAXY 800
 #define GPIO_CTP_IRQ 112 //for Ponyo Atmel's TP
 
 #define GPIO_I2C_SDA 124
@@ -141,9 +139,7 @@
 #define MSM_PMEM_AUDIO_SIZE     0x200000
 
 #define PMIC_GPIO_INT		27
-#define PMIC_VREG_WLAN_LEVEL	2900
 #define PMIC_GPIO_SD_DET	36
-//#define PMIC_GPIO_SDC4_EN_N	17  /* PMIC GPIO Number 18 */
 #define PMIC_GPIO_SDC4_EN_N	24  /* PMIC GPIO Number 25 */ //changed by Yuhaipeng 20110617
 #define PMIC_GPIO_HDMI_5V_EN_V3 32  /* PMIC GPIO for V3 H/W */
 #define PMIC_GPIO_HDMI_5V_EN_V2 39 /* PMIC GPIO for V2 H/W */
