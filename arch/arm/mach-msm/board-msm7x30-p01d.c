@@ -142,7 +142,6 @@
 #define PMIC_GPIO_SD_DET	36
 #define PMIC_GPIO_SDC4_EN_N	24  /* PMIC GPIO Number 25 */ //changed by Yuhaipeng 20110617
 #define PMIC_GPIO_HDMI_5V_EN_V3 32  /* PMIC GPIO for V3 H/W */
-#define PMIC_GPIO_HDMI_5V_EN_V2 39 /* PMIC GPIO for V2 H/W */
 
 #define WIFI_GPIO_ENABLE 126
 
@@ -159,14 +158,9 @@
 #define PM8058_GPIO_PM_TO_SYS(pm_gpio)     (pm_gpio + NR_GPIO_IRQS)
 #define PM8058_GPIO_SYS_TO_PM(sys_gpio)    (sys_gpio - NR_GPIO_IRQS)
 
-#define PMIC_GPIO_FLASH_BOOST_ENABLE	15	/* PMIC GPIO Number 16 */
-#define PMIC_GPIO_HAP_ENABLE   16  /* PMIC GPIO Number 17 */
-
 #define PMIC_GPIO_WLAN_EXT_POR  22 /* PMIC GPIO NUMBER 23 */
 
 #define BMA150_GPIO_INT 1
-
-#define HAP_LVL_SHFT_MSM_GPIO 24
 
 #define PMIC_GPIO_QUICKVX_CLK 37 /* PMIC GPIO 38 */
 
