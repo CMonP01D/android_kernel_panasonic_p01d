@@ -189,9 +189,13 @@
 //[SIMT-caoxiangteng-110715]}
 
 
+#ifdef CONFIG_M6MO
 static struct vreg *vreg_gp2;
+#endif
 static struct vreg *vreg_gp7;
+#ifdef CONFIG_M6MO
 static struct vreg *vreg_lvsw1;
+#endif
 //static struct vreg *vreg_gp6;
 //static struct vreg *vreg_gp16;
 static struct vreg *ljvreg_gp13 = NULL;
@@ -4076,6 +4080,7 @@ static struct i2c_board_info bma150_board_info[] __initdata = {
 };
 #endif
 
+#if defined(CONFIG_SENSORS_MMC31XX) || defined(CONFIG_SENSORS_MMC328X)
 /* + qiukj add for ponyo project*/
 static int magsensor_powerctrl(int on_off)
 {
@@ -4131,6 +4136,8 @@ L10_put:
 
         return  retval;
 }
+#endif
+
 #ifdef CONFIG_SENSORS_MMC31XX
 #include <linux/mmc31xx.h>
 static struct mag_platform_data mmc31xx_platform_data = {
@@ -4152,6 +4159,7 @@ struct mag_platform_data mmc328x_platform_data = {
 /*
  * add platform data for cm3623
  */
+#ifdef CONFIG_CM3623
 static int cm3623_power(int on) {
 	static struct vreg *vreg_gp4 = NULL, *vreg_wlan = NULL;
 	int 				retval = -EINVAL;
@@ -4226,6 +4234,7 @@ static struct cm3623_platform_data cm3623_platform_data = {
 	.gpio_int = GPIO_IRQ_CM3623,
 	.power = cm3623_power,
 };
+#endif
 //[SIMT-caoxiangteng-110715]}
 
 static struct i2c_board_info msm_i2c_board_info[] = {
@@ -4279,7 +4288,7 @@ static struct i2c_board_info msm_i2c_board_info[] = {
 	/*
 	* add cm3623 platform data 
 	*/
-#ifndef CONFIG_CM3623_GPIO_I2C
+#if !defined(CONFIG_CM3623_GPIO_I2C) && defined(CONFIG_CM2623)
 	{
 		I2C_BOARD_INFO(CM3623_NAME, CM3623_I2C_ADDR),
 		.platform_data = &cm3623_platform_data,
