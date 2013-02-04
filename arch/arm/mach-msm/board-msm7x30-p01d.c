@@ -110,7 +110,6 @@
 #include <mach/qdsp5v2/audio_dev_ctl.h>
 #include <mach/sdio_al.h>
 #include "smd_private.h"
-#include <linux/bma150.h>
 #include <linux/cm3623.h>
 #include "msm-keypad-devices.h" 
 
@@ -159,8 +158,6 @@
 #define PM8058_GPIO_SYS_TO_PM(sys_gpio)    (sys_gpio - NR_GPIO_IRQS)
 
 #define PMIC_GPIO_WLAN_EXT_POR  22 /* PMIC GPIO NUMBER 23 */
-
-#define BMA150_GPIO_INT 1
 
 #define PMIC_GPIO_QUICKVX_CLK 37 /* PMIC GPIO 38 */
 
@@ -3725,90 +3722,6 @@ static struct msm_hdmi_platform_data adv7520_hdmi_data = {
 	.cec_power = hdmi_cec_power,
 	.check_hdcp_hw_support = hdmi_check_hdcp_hw_support,
 };
-
-#ifdef CONFIG_BOSCH_BMA150
-static struct vreg *vreg_gp6;
-static int sensors_ldo_enable(void)
-{
-	int rc;
-
-	/*
-	 * Enable the VREGs L8(gp7), L15(gp6)
-	 * for I2C communication with sensors.
-	 */
-	pr_info("sensors_ldo_enable called!!\n");
-	vreg_gp7 = vreg_get(NULL, "gp7");
-	if (IS_ERR(vreg_gp7)) {
-		pr_err("%s: vreg_get gp7 failed\n", __func__);
-		rc = PTR_ERR(vreg_gp7);
-		goto fail_gp7_get;
-	}
-
-	rc = vreg_set_level(vreg_gp7, 1800);
-	if (rc) {
-		pr_err("%s: vreg_set_level gp7 failed\n", __func__);
-		goto fail_gp7_level;
-	}
-
-	rc = vreg_enable(vreg_gp7);
-	if (rc) {
-		pr_err("%s: vreg_enable gp7 failed\n", __func__);
-		goto fail_gp7_level;
-	}
-
-	vreg_gp6 = vreg_get(NULL, "gp6");
-	if (IS_ERR(vreg_gp6)) {
-		pr_err("%s: vreg_get gp6 failed\n", __func__);
-		rc = PTR_ERR(vreg_gp6);
-		goto fail_gp6_get;
-	}
-
-	rc = vreg_set_level(vreg_gp6, 3050);
-	if (rc) {
-		pr_err("%s: vreg_set_level gp6 failed\n", __func__);
-		goto fail_gp6_level;
-	}
-
-	rc = vreg_enable(vreg_gp6);
-	if (rc) {
-		pr_err("%s: vreg_enable gp6 failed\n", __func__);
-		goto fail_gp6_level;
-	}
-
-	return 0;
-
-fail_gp6_level:
-	vreg_put(vreg_gp6);
-fail_gp6_get:
-	vreg_disable(vreg_gp7);
-fail_gp7_level:
-	vreg_put(vreg_gp7);
-fail_gp7_get:
-	return rc;
-}
-
-static void sensors_ldo_disable(void)
-{
-	pr_info("sensors_ldo_disable called!!\n");
-	vreg_disable(vreg_gp6);
-	vreg_put(vreg_gp6);
-	vreg_disable(vreg_gp7);
-	vreg_put(vreg_gp7);
-}
-static struct bma150_platform_data bma150_data = {
-	.power_on = sensors_ldo_enable,
-	.power_off = sensors_ldo_disable,
-};
-
-static struct i2c_board_info bma150_board_info[] __initdata = {
-	{
-		I2C_BOARD_INFO("bma150", 0x38),
-		.flags = I2C_CLIENT_WAKE,
-		.irq = MSM_GPIO_TO_INT(BMA150_GPIO_INT),
-		.platform_data = &bma150_data,
-	},
-};
-#endif
 
 #if defined(CONFIG_SENSORS_MMC31XX) || defined(CONFIG_SENSORS_MMC328X)
 /* + qiukj add for ponyo project*/
