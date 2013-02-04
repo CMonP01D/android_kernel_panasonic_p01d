@@ -5017,23 +5017,6 @@ static void wlan_config_gpios(void)
 	}
 }
 
-#ifdef CONFIG_BACKLIGHT_KTD259
-static struct resource msm_bl_resources[] = {
-	{
-		.name	= "ctrl",
-		.start	= 30,
-		.end	= 30,
-		.flags	= IORESOURCE_IO,
-	},
-};
-
-static struct platform_device msm_bl_device = {
-	.name   = "ktd259",
-	.num_resources	= ARRAY_SIZE(msm_bl_resources),
-	.resource	= msm_bl_resources,
-};
-#endif
-
 static int display_common_power(int on)
 {
 	int rc = 0, flag_on = !!on;
@@ -6028,9 +6011,6 @@ static struct platform_device *devices[] __initdata = {
 	&msm_device_gpio_i2c_cm3623,
 #endif 
 	//[SIMT-caoxiangteng-110715]}
-#ifdef CONFIG_BACKLIGHT_KTD259
-    &msm_bl_device,
-#endif
 	&lcdc_lg4573_panel_device,
 
 
