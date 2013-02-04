@@ -292,10 +292,7 @@ static int pm8058_gpios_init(void)
 	};
 
 
-	if (machine_is_msm8x55_svlte_surf() || machine_is_msm8x55_svlte_ffa())
-		pmic_gpio_hdmi_5v_en = PMIC_GPIO_HDMI_5V_EN_V2 ;
-	else
-		pmic_gpio_hdmi_5v_en = PMIC_GPIO_HDMI_5V_EN_V3 ;
+	pmic_gpio_hdmi_5v_en = PMIC_GPIO_HDMI_5V_EN_V3 ;
 
 #ifdef CONFIG_MMC_MSM_CARD_HW_DETECTION
 	rc = pm8058_gpio_config(PMIC_GPIO_SD_DET - 1, &sdcc_det);
@@ -2471,23 +2468,8 @@ static unsigned int msm_bahama_shutdown_power(int value)
 	return rc;
 };
 
-static struct msm_gpio marimba_svlte_config_clock[] = {
-	{ GPIO_CFG(34, 0, GPIO_CFG_OUTPUT, GPIO_CFG_NO_PULL, GPIO_CFG_2MA),
-		"MARIMBA_SVLTE_CLOCK_ENABLE" },
-};
-
 static unsigned int msm_marimba_gpio_config_svlte(int gpio_cfg_marimba)
 {
-	if (machine_is_msm8x55_svlte_surf() ||
-		machine_is_msm8x55_svlte_ffa()) {
-		if (gpio_cfg_marimba)
-			gpio_set_value(GPIO_PIN
-				(marimba_svlte_config_clock->gpio_cfg), 1);
-		else
-			gpio_set_value(GPIO_PIN
-				(marimba_svlte_config_clock->gpio_cfg), 0);
-	}
-
 	return 0;
 };
 
@@ -2507,27 +2489,6 @@ static unsigned int msm_marimba_setup_power(void)
 					__func__, rc);
 		goto out;
 	}
-
-	if (machine_is_msm8x55_svlte_surf() || machine_is_msm8x55_svlte_ffa()) {
-		rc = msm_gpios_request_enable(marimba_svlte_config_clock,
-				ARRAY_SIZE(marimba_svlte_config_clock));
-		if (rc < 0) {
-			printk(KERN_ERR
-				"%s: msm_gpios_request_enable failed (%d)\n",
-					__func__, rc);
-			return rc;
-		}
-
-		rc = gpio_direction_output(GPIO_PIN
-			(marimba_svlte_config_clock->gpio_cfg), 0);
-		if (rc < 0) {
-			printk(KERN_ERR
-				"%s: gpio_direction_output failed (%d)\n",
-					__func__, rc);
-			return rc;
-		}
-	}
-
 out:
 	return rc;
 };
@@ -2614,15 +2575,7 @@ static int fm_radio_setup(struct marimba_fm_platform_data *pdata)
 			__func__, rc);
 		goto fm_clock_vote_fail;
 	}
-	/*Request the Clock Using GPIO34/AP2MDM_MRMBCK_EN in case
-	of svlte*/
-	if (machine_is_msm8x55_svlte_surf() ||
-			machine_is_msm8x55_svlte_ffa())	{
-		rc = marimba_gpio_config(1);
-		if (rc < 0)
-			printk(KERN_ERR "%s: clock enable for svlte : %d\n",
-						__func__, rc);
-	}
+
 	irqcfg = GPIO_CFG(147, 0, GPIO_CFG_INPUT, GPIO_CFG_NO_PULL,
 					GPIO_CFG_2MA);
 	rc = gpio_tlmm_config(irqcfg, GPIO_CFG_ENABLE);
@@ -2676,17 +2629,6 @@ static void fm_radio_shutdown(struct marimba_fm_platform_data *pdata)
 	if (rc < 0)
 		printk(KERN_ERR "%s: clock_vote return val: %d\n",
 						__func__, rc);
-
-	/*Disable the Clock Using GPIO34/AP2MDM_MRMBCK_EN in case
-	of svlte*/
-	if (machine_is_msm8x55_svlte_surf() ||
-			machine_is_msm8x55_svlte_ffa())	{
-		rc = marimba_gpio_config(0);
-		if (rc < 0)
-			printk(KERN_ERR "%s: clock disable for svlte : %d\n",
-						__func__, rc);
-	}
-
 
 	if (!bahama_not_marimba)	{
 		rc = pmapp_vreg_level_vote(id, PMAPP_VREG_S2, 0);
@@ -3450,19 +3392,6 @@ static char *usb_functions_default_adb[] = {
 	"usb_mass_storage",
 };
 
-static char *fusion_usb_functions_default[] = {
-	"diag",
-	"nmea",
-	"usb_mass_storage",
-};
-
-static char *fusion_usb_functions_default_adb[] = {
-	"diag",
-	"adb",
-	"nmea",
-	"usb_mass_storage",
-};
-
 static char *usb_functions_rndis[] = {
 	"rndis",
 };
@@ -3549,29 +3478,6 @@ static struct android_usb_product usb_products[] = {
 		.product_id	= 0x902D,
 		.num_functions	= ARRAY_SIZE(usb_functions_rndis_adb_diag),
 		.functions	= usb_functions_rndis_adb_diag,
-	},
-};
-
-static struct android_usb_product fusion_usb_products[] = {
-	{
-		.product_id     = 0x9028,
-		.num_functions  = ARRAY_SIZE(fusion_usb_functions_default),
-		.functions      = fusion_usb_functions_default,
-	},
-	{
-		.product_id     = 0x9029,
-		.num_functions  = ARRAY_SIZE(fusion_usb_functions_default_adb),
-		.functions      = fusion_usb_functions_default_adb,
-	},
-	{
-		.product_id     = 0xf00e,
-		.num_functions  = ARRAY_SIZE(usb_functions_rndis),
-		.functions      = usb_functions_rndis,
-	},
-	{
-		.product_id     = 0x9024,
-		.num_functions  = ARRAY_SIZE(usb_functions_rndis_adb),
-		.functions      = usb_functions_rndis_adb,
 	},
 };
 
@@ -4727,10 +4633,7 @@ static int hdmi_enable_5v(int on)
 {
 	int pmic_gpio_hdmi_5v_en ;
 
-	if (machine_is_msm8x55_svlte_surf() || machine_is_msm8x55_svlte_ffa())
-		pmic_gpio_hdmi_5v_en = PMIC_GPIO_HDMI_5V_EN_V2 ;
-	else
-		pmic_gpio_hdmi_5v_en = PMIC_GPIO_HDMI_5V_EN_V3 ;
+	pmic_gpio_hdmi_5v_en = PMIC_GPIO_HDMI_5V_EN_V3 ;
 
 	pr_info("%s: %d\n", __func__, on);
 	if (on) {
@@ -7415,8 +7318,6 @@ static void __init msm7x30_init_mmc(void)
 	msm_add_sdcc(1, &msm7x30_sdc1_data);
 #endif
 #ifdef CONFIG_MMC_MSM_SDC2_SUPPORT
-	if (machine_is_msm8x55_svlte_surf())
-		msm7x30_sdc2_data.msmsdcc_fmax =  24576000;
 	sdcc_vreg_data[1].vreg_data = vreg_s3;
 	sdcc_vreg_data[1].level = 1800;
 	msm_add_sdcc(2, &msm7x30_sdc2_data);
@@ -8200,11 +8101,6 @@ static void __init msm7x30_init(void)
 	int bt_rc;
 	#endif
 	unsigned smem_size;
-	uint32_t usb_hub_gpio_cfg_value = GPIO_CFG(56,
-						0,
-						GPIO_CFG_OUTPUT,
-						GPIO_CFG_NO_PULL,
-						GPIO_CFG_2MA);
 	uint32_t soc_version = 0;
        //chenping add for ponyo usb bug 20110711 start
        #ifdef  CONFIG_PONYO_DOCOMO_OVP_CONTROL
@@ -8304,15 +8200,6 @@ static void __init msm7x30_init(void)
 #endif
 	msm_adc_pdata.dev_names = msm_adc_surf_device_names;
 	msm_adc_pdata.num_adc = ARRAY_SIZE(msm_adc_surf_device_names);
-#ifdef CONFIG_USB_ANDROID
-	if (machine_is_msm8x55_svlte_surf() ||
-		machine_is_msm8x55_svlte_ffa()) {
-		android_usb_pdata.product_id = 0x9028;
-		android_usb_pdata.num_products =
-			ARRAY_SIZE(fusion_usb_products);
-		android_usb_pdata.products = fusion_usb_products;
-	}
-#endif
 
     bl_config_gpios();
 	wlan_config_gpios();
@@ -8360,8 +8247,7 @@ static void __init msm7x30_init(void)
 	i2c_register_board_info(0, msm_i2c_board_info,
 			ARRAY_SIZE(msm_i2c_board_info));
 
-	if (!machine_is_msm8x55_svlte_ffa() && !machine_is_msm7x30_fluid())
-		marimba_pdata.tsadc = &marimba_tsadc_pdata;
+	marimba_pdata.tsadc = &marimba_tsadc_pdata;
 
 	i2c_register_board_info(2, msm_marimba_board_info,
 			ARRAY_SIZE(msm_marimba_board_info));
@@ -8378,26 +8264,12 @@ static void __init msm7x30_init(void)
 	msm_device_ssbi7.dev.platform_data = &msm_i2c_ssbi7_pdata;
 #endif
 
-#if defined(CONFIG_TOUCHSCREEN_TSC2007) || \
-	defined(CONFIG_TOUCHSCREEN_TSC2007_MODULE)
-	if (machine_is_msm8x55_svlte_ffa())
-		i2c_register_board_info(2, tsc_i2c_board_info,
-				ARRAY_SIZE(tsc_i2c_board_info));
-#endif
-
 	if (machine_is_msm7x30_surf())
 		platform_device_register(&flip_switch_device);
 	pmic8058_leds_init();
 #ifdef CONFIG_LEDS_GPIO
       platform_device_register(&gpio_leds);
 #endif
-	if (machine_is_msm8x55_svlte_surf() || machine_is_msm8x55_svlte_ffa()) {
-		rc = gpio_tlmm_config(usb_hub_gpio_cfg_value, GPIO_CFG_ENABLE);
-		if (rc)
-			pr_err("%s: gpio_tlmm_config(%#x)=%d\n",
-				__func__, usb_hub_gpio_cfg_value, rc);
-	}
-
 	boot_reason = *(unsigned int *)
 		(smem_get_entry(SMEM_POWER_ON_STATUS_INFO, &smem_size));
 	printk(KERN_NOTICE "Boot Reason = 0x%02x\n", boot_reason);
