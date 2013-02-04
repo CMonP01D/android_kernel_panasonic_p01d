@@ -5157,23 +5157,6 @@ static struct platform_device msm_bl_device = {
 };
 #endif
 
-#ifdef CONFIG_BACKLIGHT_CHARGE_PUMP
-static struct resource msm_charge_pump_resources[] = {
-	{
-		.name	= "ctrl",
-		.start	= 30,
-		.end	= 30,
-		.flags	= IORESOURCE_IO,
-	},
-};
-
-static struct platform_device msm_charge_pump_device = {
-	.name   = "charge_pump",
-	.num_resources	= ARRAY_SIZE(msm_charge_pump_resources),
-	.resource	= msm_charge_pump_resources,
-};
-#endif
-
 static int display_common_power(int on)
 {
 	int rc = 0, flag_on = !!on;
@@ -6170,9 +6153,6 @@ static struct platform_device *devices[] __initdata = {
 	//[SIMT-caoxiangteng-110715]}
 #ifdef CONFIG_BACKLIGHT_KTD259
     &msm_bl_device,
-#endif
-#ifdef CONFIG_BACKLIGHT_CHARGE_PUMP
-    &msm_charge_pump_device,
 #endif
 	&lcdc_lg4573_panel_device,
 
