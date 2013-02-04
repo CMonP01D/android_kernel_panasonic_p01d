@@ -132,7 +132,6 @@
 #define MSM_FB_SIZE            0x2ee000 /* 480 * 800 * 4bpp * 2 Pages */ // 0x500000
 #endif
 #define MSM_PMEM_ADSP_SIZE      0x2000000 		//[SIMT-wanglei-110921] 0x1E00000 // 0x4B00000
-#define MSM_FLUID_PMEM_ADSP_SIZE	0x2800000
 #define PMEM_KERNEL_EBI1_SIZE   0x600000
 #define MSM_PMEM_AUDIO_SIZE     0x200000
 
@@ -8129,14 +8128,6 @@ static int __init pmem_adsp_size_setup(char *p)
 	return 0;
 }
 early_param("pmem_adsp_size", pmem_adsp_size_setup);
-
-static unsigned fluid_pmem_adsp_size = MSM_FLUID_PMEM_ADSP_SIZE;
-static int __init fluid_pmem_adsp_size_setup(char *p)
-{
-	fluid_pmem_adsp_size = memparse(p, NULL);
-	return 0;
-}
-early_param("fluid_pmem_adsp_size", fluid_pmem_adsp_size_setup);
 
 static unsigned pmem_audio_size = MSM_PMEM_AUDIO_SIZE;
 static int __init pmem_audio_size_setup(char *p)
