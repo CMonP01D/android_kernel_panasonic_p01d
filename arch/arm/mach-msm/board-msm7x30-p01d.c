@@ -85,7 +85,6 @@
 
 #define GPIO_I2C_SDA 124
 #define GPIO_I2C_SCL 123
-#define TP_OTHER_USE_GPIO 0
 
 #ifdef CONFIG_CM3623_GPIO
 #define GPIO_I2C_SDA_CM3623 121
@@ -2124,10 +2123,6 @@ static struct msm_gpio mi2s_rx_data_lines_gpios[] = {
 	    "MI2S_DATA_SD0_A"},
 	{ GPIO_CFG(122, 1, GPIO_CFG_OUTPUT, GPIO_CFG_NO_PULL, GPIO_CFG_2MA),
 	    "MI2S_DATA_SD1_A"},
-#if TP_OTHER_USE_GPIO
-	{ GPIO_CFG(123, 1, GPIO_CFG_OUTPUT, GPIO_CFG_NO_PULL, GPIO_CFG_2MA),
-	    "MI2S_DATA_SD2_A"},
-#endif
 	{ GPIO_CFG(146, 1, GPIO_CFG_OUTPUT, GPIO_CFG_NO_PULL, GPIO_CFG_2MA),
 	    "MI2S_DATA_SD3"},
 };
@@ -4448,10 +4443,6 @@ static struct msm_gpio dtv_panel_irq_gpios[] = {
 };
 
 static struct msm_gpio dtv_panel_gpios[] = {
-#if TP_OTHER_USE_GPIO	
-	{ GPIO_CFG(123, 1, GPIO_CFG_OUTPUT,  GPIO_CFG_NO_PULL, GPIO_CFG_4MA), "wca_sd2" },
-	{ GPIO_CFG(124, 1, GPIO_CFG_OUTPUT,  GPIO_CFG_NO_PULL, GPIO_CFG_8MA), "dtv_pclk" },
-#endif
 	{ GPIO_CFG(160, 1, GPIO_CFG_OUTPUT,  GPIO_CFG_NO_PULL, GPIO_CFG_4MA), "dtv_data5" },
 	{ GPIO_CFG(161, 1, GPIO_CFG_OUTPUT,  GPIO_CFG_NO_PULL, GPIO_CFG_4MA), "dtv_data6" },
 	{ GPIO_CFG(162, 1, GPIO_CFG_OUTPUT,  GPIO_CFG_NO_PULL, GPIO_CFG_4MA), "dtv_data7" },
