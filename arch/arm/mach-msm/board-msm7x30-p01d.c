@@ -726,7 +726,6 @@ static struct i2c_board_info msm_camera_boardinfo[] __initdata = {
 //GPIO_CFG(1, 0, GPIO_CFG_OUTPUT, GPIO_CFG_PULL_DOWN, GPIO_CFG_2MA), /* VCM */
 //};
 
-#ifdef CONFIG_PONYO  //MT9d112_CAMERA //Ponyo
 static uint32_t camera_off_gpio_table[] = {
 	/* parallel CAMERA interfaces */
 	GPIO_CFG(0,  0, GPIO_CFG_OUTPUT, GPIO_CFG_PULL_DOWN, GPIO_CFG_2MA), /*PWDN-VAG  */
@@ -771,7 +770,6 @@ static uint32_t camera_on_gpio_table[] = {
 	GPIO_CFG(14, 1, GPIO_CFG_INPUT, GPIO_CFG_PULL_DOWN, GPIO_CFG_2MA), /* VSYNC_IN */
 	GPIO_CFG(15, 1, GPIO_CFG_OUTPUT, GPIO_CFG_NO_PULL, GPIO_CFG_2MA), /* MCLK */
 };
-#endif
 
 static void config_gpio_table(uint32_t *table, int len)
 {
@@ -6300,30 +6298,12 @@ static struct msm_gpio sdc1_cfg_data[] = {
 	{GPIO_CFG(38, 1, GPIO_CFG_OUTPUT, GPIO_CFG_NO_PULL, GPIO_CFG_16MA), "sdc1_clk"},
 	{GPIO_CFG(39, 1, GPIO_CFG_OUTPUT, GPIO_CFG_PULL_UP, GPIO_CFG_8MA), "sdc1_cmd"},
 	{GPIO_CFG(40, 1, GPIO_CFG_OUTPUT, GPIO_CFG_PULL_UP, GPIO_CFG_8MA), "sdc1_dat_3"},
-#ifdef CONFIG_PONYO
 	{GPIO_CFG(41, 1, GPIO_CFG_INPUT, GPIO_CFG_NO_PULL, GPIO_CFG_2MA), "gpio_41_in"},// [SIMT-qiukejun-110727] add this configuration for detecting version for ponyo
-#endif	
 	{GPIO_CFG(42, 1, GPIO_CFG_OUTPUT, GPIO_CFG_PULL_UP, GPIO_CFG_8MA), "sdc1_dat_1"},
-#ifdef CONFIG_PONYO
 	{GPIO_CFG(43, 1, GPIO_CFG_INPUT, GPIO_CFG_NO_PULL, GPIO_CFG_2MA), "gpio_43_in"},// [SIMT-qiukejun-110727] add this configuration for detecting version for ponyo
-#endif
 };
 
 static struct msm_gpio sdc2_cfg_data[] = {
-#ifndef CONFIG_PONYO
-	{GPIO_CFG(64, 1, GPIO_CFG_OUTPUT, GPIO_CFG_NO_PULL, GPIO_CFG_16MA), "sdc2_clk"},
-	{GPIO_CFG(65, 1, GPIO_CFG_OUTPUT, GPIO_CFG_PULL_UP, GPIO_CFG_8MA), "sdc2_cmd"},
-	{GPIO_CFG(66, 1, GPIO_CFG_OUTPUT, GPIO_CFG_PULL_UP, GPIO_CFG_8MA), "sdc2_dat_3"},
-	{GPIO_CFG(67, 1, GPIO_CFG_OUTPUT, GPIO_CFG_PULL_UP, GPIO_CFG_8MA), "sdc2_dat_2"},
-	{GPIO_CFG(68, 1, GPIO_CFG_OUTPUT, GPIO_CFG_PULL_UP, GPIO_CFG_8MA), "sdc2_dat_1"},
-	{GPIO_CFG(69, 1, GPIO_CFG_OUTPUT, GPIO_CFG_PULL_UP, GPIO_CFG_8MA), "sdc2_dat_0"},
-
-#ifdef CONFIG_MMC_MSM_SDC2_8_BIT_SUPPORT
-	{GPIO_CFG(115, 1, GPIO_CFG_OUTPUT, GPIO_CFG_PULL_UP, GPIO_CFG_8MA), "sdc2_dat_4"},
-	{GPIO_CFG(114, 1, GPIO_CFG_OUTPUT, GPIO_CFG_PULL_UP, GPIO_CFG_8MA), "sdc2_dat_5"},
-	{GPIO_CFG(113, 1, GPIO_CFG_OUTPUT, GPIO_CFG_PULL_UP, GPIO_CFG_8MA), "sdc2_dat_6"},
-#endif
-#endif
 };
 
 static struct msm_gpio sdc3_cfg_data[] = {
@@ -7872,11 +7852,7 @@ static struct i2c_board_info CTP_i2c_devices[] = {
 //[simt-zhanghui-110830]{
 
 static struct msm_gpio headset_key_data[] = {
-#if defined(CONFIG_PONYO)    
 	{GPIO_CFG(67, 0, GPIO_CFG_INPUT, GPIO_CFG_NO_PULL, GPIO_CFG_2MA), "headset_key"},
-#else
-	Program Error!
-#endif
 };
 
 // [SIMT-qiukejun-110727]{
@@ -7957,9 +7933,7 @@ static void __init msm7x30_init(void)
 
 	msm_clock_init(msm_clocks_7x30, msm_num_clocks_7x30);
 
-#ifdef CONFIG_PONYO
 	msm_config_mb86a29();
-#endif
 
     set_L8_to_2P2(); //[SIMT-liyueyi-20110808] keep PMIC L8 power supply
 
