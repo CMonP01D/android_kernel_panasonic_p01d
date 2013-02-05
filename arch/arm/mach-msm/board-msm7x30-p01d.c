@@ -108,7 +108,9 @@
 #include <mach/qdsp5v2/audio_dev_ctl.h>
 #include <mach/sdio_al.h>
 #include "smd_private.h"
+#ifdef CONFIG_CM3623
 #include <linux/cm3623.h>
+#endif
 #include "msm-keypad-devices.h" 
 
 //[SIMT-huangli-110718] common part for bma device
