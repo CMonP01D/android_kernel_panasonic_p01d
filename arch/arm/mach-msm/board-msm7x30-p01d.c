@@ -164,7 +164,6 @@
 /*
  *  add gpio i2c simulate for poyon
  */
-#include <linux/cm3623.h>
 #ifdef CONFIG_CM3623_GPIO_I2C
 #define GPIO_I2C_SDA_CM3623 121
 #define GPIO_I2C_SCL_CM3623 120
