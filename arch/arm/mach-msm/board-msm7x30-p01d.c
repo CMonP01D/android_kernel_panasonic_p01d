@@ -136,7 +136,7 @@
 
 #define PMIC_GPIO_INT		27
 #define PMIC_GPIO_SD_DET	36
-#define PMIC_GPIO_SDC4_EN_N	24  /* PMIC GPIO Number 25 */ //changed by Yuhaipeng 20110617
+#define PMIC_GPIO_SDC4_PWR_EN_N	24  /* PMIC GPIO Number 25 */ //changed by Yuhaipeng 20110617
 #define PMIC_GPIO_HDMI_5V_EN_V3 32  /* PMIC GPIO for V3 H/W */
 
 #define WIFI_GPIO_ENABLE 126
@@ -301,21 +301,21 @@ static int pm8058_gpios_init(void)
 		return rc;
 	}
 
-	rc = pm8058_gpio_config(PMIC_GPIO_SDC4_EN_N, &sdc4_en);
+	rc = pm8058_gpio_config(PMIC_GPIO_SDC4_PWR_EN_N, &sdc4_en);
 	if (rc) {
-		pr_err("%s PMIC_GPIO_SDC4_EN_N config failed\n",
+		pr_err("%s PMIC_GPIO_SDC4_PWR_EN_N config failed\n",
 							 __func__);
 		return rc;
 	}
-	rc = gpio_request(PM8058_GPIO_PM_TO_SYS(PMIC_GPIO_SDC4_EN_N),
+	rc = gpio_request(PM8058_GPIO_PM_TO_SYS(PMIC_GPIO_SDC4_PWR_EN_N),
 			  "sdc4_en");
 	if (rc) {
-		pr_err("%s PMIC_GPIO_SDC4_EN_N gpio_request failed\n",
+		pr_err("%s PMIC_GPIO_SDC4_PWR_EN_N gpio_request failed\n",
 			__func__);
 		return rc;
 	}
 	gpio_set_value_cansleep(
-		PM8058_GPIO_PM_TO_SYS(PMIC_GPIO_SDC4_EN_N), 0);
+		PM8058_GPIO_PM_TO_SYS(PMIC_GPIO_SDC4_PWR_EN_N), 0);
 
 	return 0;
 }
@@ -6738,13 +6738,13 @@ static int msm_sdcc_get_wpswitch(struct device *dv)
 static int msm_cfg_sdcard_power(struct device *dev, bool on)
 {
 	if (on) {
-	    printk("----%s----%d---PMIC_GPIO_SDC4_EN_N on--\n",__func__,__LINE__);
-		gpio_set_value_cansleep(PM8058_GPIO_PM_TO_SYS(PMIC_GPIO_SDC4_EN_N), 0);
+	    printk("----%s----%d---PMIC_GPIO_SDC4_PWR_EN_N on--\n",__func__,__LINE__);
+		gpio_set_value_cansleep(PM8058_GPIO_PM_TO_SYS(PMIC_GPIO_SDC4_PWR_EN_N), 0);
 		//msm_sdcc_setup_gpio(4, 1);
 	} else {
 		//msm_sdcc_setup_gpio(4, 0);
-	    printk("----%s----%d---PMIC_GPIO_SDC4_EN_N off--\n",__func__,__LINE__);
-		gpio_set_value_cansleep(PM8058_GPIO_PM_TO_SYS(PMIC_GPIO_SDC4_EN_N), 1);
+	    printk("----%s----%d---PMIC_GPIO_SDC4_PWR_EN_N off--\n",__func__,__LINE__);
+		gpio_set_value_cansleep(PM8058_GPIO_PM_TO_SYS(PMIC_GPIO_SDC4_PWR_EN_N), 1);
 	}
 	printk("----%s----%d-----\n",__func__,__LINE__);
 
