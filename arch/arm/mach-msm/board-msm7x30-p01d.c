@@ -4711,14 +4711,6 @@ static struct platform_device msm_kgsl_2d0 = {
 };
 #endif
 
-void __init msm_add_kgsl_device(void) 
-{
-	platform_device_register(&msm_kgsl_3d0);
-#ifdef CONFIG_MSM_KGSL_2D
-	platform_device_register(&msm_kgsl_2d0);
-#endif
-}
-
 #if defined(CONFIG_CRYPTO_DEV_QCRYPTO) || \
 		defined(CONFIG_CRYPTO_DEV_QCRYPTO_MODULE) || \
 		defined(CONFIG_CRYPTO_DEV_QCEDEV) || \
@@ -5944,6 +5936,10 @@ static struct platform_device *devices[] __initdata = {
    (defined(CONFIG_MSM_BT_POWER) || defined(CONFIG_MSM_BT_POWER_MODULE))
 	&msm_bt_power_device,
 	&bcm4330_wifi_device,
+#endif
+	&msm_kgsl_3d0,
+#ifdef CONFIG_MSM_KGSL_2D
+	&msm_kgsl_2d0,
 #endif
 #ifdef CONFIG_MT9T013
 	&msm_camera_sensor_mt9t013,
@@ -7695,7 +7691,6 @@ static void __init msm7x30_init(void)
         ARRAY_SIZE(headset_key_data));
         
 	platform_add_devices(devices, ARRAY_SIZE(devices));
-	msm_add_kgsl_device();
 #ifdef CONFIG_USB_EHCI_MSM_72K
 	msm_add_host(0, &msm_usb_host_pdata);
 #endif
