@@ -518,28 +518,6 @@ static struct pmic8058_leds_platform_data pm8058_ffa_leds_data = {
 	.leds	= pmic8058_ffa_leds,
 };
 
-static struct pmic8058_led pmic8058_surf_leds[] = {
-	[0] = {
-		.name		= "keyboard-backlight",
-		.max_brightness = 15,
-		.id		= PMIC8058_ID_LED_KB_LIGHT,
-	},
-	[1] = {
-		.name		= "voice:red",
-		.max_brightness = 20,
-		.id		= PMIC8058_ID_LED_0,
-	},
-	[2] = {
-		.name		= "wlan:green",
-		.max_brightness = 20,
-		.id		= PMIC8058_ID_LED_2,
-	},
-};
-static struct pmic8058_leds_platform_data pm8058_surf_leds_data = {
-	.num_leds = ARRAY_SIZE(pmic8058_surf_leds),
-	.leds	= pmic8058_surf_leds,
-};
-
 #endif
 
 
@@ -6868,26 +6846,7 @@ static unsigned int msm7x30_sdcc_slot_status(struct device *dev)
 
 static int msm_sdcc_get_wpswitch(struct device *dv)
 {
-	void __iomem *wp_addr = 0;
-	uint32_t ret = 0;
-	struct platform_device *pdev;
-
-	if (!(machine_is_msm7x30_surf()))
-		return -1;
-	pdev = container_of(dv, struct platform_device, dev);
-
-	wp_addr = ioremap(FPGA_SDCC_STATUS, 4);
-	if (!wp_addr) {
-		pr_err("%s: Could not remap %x\n", __func__, FPGA_SDCC_STATUS);
-		return -ENOMEM;
-	}
-
-	ret = (((readl(wp_addr) >> 4) >> (pdev->id-1)) & 0x01);
-	pr_info("%s: WP Status for Slot %d = 0x%x \n", __func__,
-							pdev->id, ret);
-	iounmap(wp_addr);
-
-	return ret;
+	return -1;
 }
 
 //Add by Yuhaipeng 201100617,Set the sdcard_gpios when suspend/resume
@@ -7229,17 +7188,10 @@ static struct msm_tsif_platform_data tsif_platform_data = {
 static void __init pmic8058_leds_init(void)
 {
 #ifdef CONFIG_LEDS_PMIC8058
-	if (machine_is_msm7x30_surf()) {
-		pm8058_7x30_data.sub_devices[PM8058_SUBDEV_LED].platform_data
-			= &pm8058_surf_leds_data;
-		pm8058_7x30_data.sub_devices[PM8058_SUBDEV_LED].data_size
-			= sizeof(pm8058_surf_leds_data);
-	} else if (!machine_is_msm7x30_fluid()) {
-		pm8058_7x30_data.sub_devices[PM8058_SUBDEV_LED].platform_data
-			= &pm8058_ffa_leds_data;
-		pm8058_7x30_data.sub_devices[PM8058_SUBDEV_LED].data_size
-			= sizeof(pm8058_ffa_leds_data);
-	}
+	pm8058_7x30_data.sub_devices[PM8058_SUBDEV_LED].platform_data
+		= &pm8058_ffa_leds_data;
+	pm8058_7x30_data.sub_devices[PM8058_SUBDEV_LED].data_size
+		= sizeof(pm8058_ffa_leds_data);
 #endif
 }
 
@@ -7266,30 +7218,6 @@ static struct msm_spm_platform_data msm_spm_data __initdata = {
 	.collapse_mid_vlevel = 0xE0,
 
 	.vctl_timeout_us = 50,
-};
-
-static int kp_flip_mpp_config(void)
-{
-	return pm8058_mpp_config_digital_in(PM_FLIP_MPP,
-		PM8058_MPP_DIG_LEVEL_S3, PM_MPP_DIN_TO_INT);
-}
-
-static struct flip_switch_pdata flip_switch_data = {
-	.name = "kp_flip_switch",
-	.flip_gpio = PM8058_GPIO_PM_TO_SYS(PM8058_GPIOS) + PM_FLIP_MPP,
-	.left_key = KEY_OPEN,
-	.right_key = KEY_CLOSE,
-	.active_low = 0,
-	.wakeup = 1,
-	.flip_mpp_config = kp_flip_mpp_config,
-};
-
-static struct platform_device flip_switch_device = {
-	.name   = "kp_flip_switch",
-	.id	= -1,
-	.dev    = {
-		.platform_data = &flip_switch_data,
-	}
 };
 
 //[simt-zhanghui-110808]{
@@ -7819,8 +7747,6 @@ static void __init msm7x30_init(void)
 	msm_device_ssbi7.dev.platform_data = &msm_i2c_ssbi7_pdata;
 #endif
 
-	if (machine_is_msm7x30_surf())
-		platform_device_register(&flip_switch_device);
 	pmic8058_leds_init();
 #ifdef CONFIG_LEDS_GPIO
       platform_device_register(&gpio_leds);
