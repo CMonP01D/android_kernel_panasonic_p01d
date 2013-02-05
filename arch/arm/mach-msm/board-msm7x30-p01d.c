@@ -174,11 +174,11 @@
 //[SIMT-caoxiangteng-110715]}
 
 
-#ifdef CONFIG_M6MO
+#if defined(CONFIG_M6MO) || defined(CONFIG_MT9D112)
 static struct vreg *vreg_gp2;
 #endif
 static struct vreg *vreg_gp7;
-#ifdef CONFIG_M6MO
+#if defined(CONFIG_M6MO) || defined(CONFIG_MT9D112)
 static struct vreg *vreg_lvsw1;
 #endif
 //static struct vreg *vreg_gp6;
