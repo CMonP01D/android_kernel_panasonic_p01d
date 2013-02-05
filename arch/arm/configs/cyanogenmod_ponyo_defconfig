@@ -1,7 +1,7 @@
 #
 # Automatically generated make config: don't edit
 # Linux kernel version: 2.6.35.11
-# Tue Feb  5 19:41:14 2013
+# Tue Feb  5 19:51:49 2013
 #
 CONFIG_ARM=y
 CONFIG_SYS_SUPPORTS_APM_EMULATION=y
@@ -1187,7 +1187,7 @@ CONFIG_MII=y
 # CONFIG_ENC28J60 is not set
 # CONFIG_ETHOC is not set
 # CONFIG_SMC911X is not set
-CONFIG_SMSC911X=y
+# CONFIG_SMSC911X is not set
 # CONFIG_DNET is not set
 # CONFIG_IBM_NEW_EMAC_ZMII is not set
 # CONFIG_IBM_NEW_EMAC_RGMII is not set
