@@ -219,7 +219,6 @@ void bcm_wlan_power_on(int flag)
 EXPORT_SYMBOL(bcm_wlan_power_on);
 
 //Add by TaoYuan 2011.3.25
-//#define BCM4330_DEBUG 5
 void BCM4330_PowerOn(void)
 {
   printk(KERN_ERR "BCM4330_DEBUG:starting to power init!!\n");
@@ -7903,9 +7902,6 @@ int set_L8_to_2P2(void)
 static void __init msm7x30_init(void)
 {
 	int rc;
-	#ifdef BCM4330_DEBUG
-	int bt_rc;
-	#endif
 	unsigned smem_size;
 	uint32_t soc_version = 0;
        //chenping add for ponyo usb bug 20110711 start
@@ -7920,16 +7916,6 @@ static void __init msm7x30_init(void)
 		       __func__);
 
 	soc_version = socinfo_get_version();
-
-         //Add by TaoYuan for BCM4330 debug 2011.3.25
-	#ifdef BCM4330_DEBUG
-	bt_rc = msm_gpios_enable(bt_config_power_on,
-			ARRAY_SIZE(bt_config_power_on));
-	if (bt_rc < 0)
-		printk(KERN_ERR "BCM4330_DEBUG:GPIO configeration error!\n");
-
-	BCM4330_PowerOn();
-	#endif
 
 	msm_clock_init(msm_clocks_7x30, msm_num_clocks_7x30);
 
