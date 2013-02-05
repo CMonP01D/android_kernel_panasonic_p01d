@@ -239,15 +239,6 @@ static int pm8058_gpios_init(void)
 	int rc;
 	int pmic_gpio_hdmi_5v_en;
 
-#ifdef CONFIG_MMC_MSM_CARD_HW_DETECTION
-	struct pm8058_gpio sdcc_det = {
-		.direction      = PM_GPIO_DIR_IN,
-		.pull           = PM_GPIO_PULL_UP_1P5,
-		.vin_sel        = 2,
-		.function       = PM_GPIO_FUNC_NORMAL,
-		.inv_int_pol    = 0,
-	};
-#endif
 	struct pm8058_gpio sdc4_en = {
 		.direction      = PM_GPIO_DIR_OUT,
 		.pull           = PM_GPIO_PULL_NO,
@@ -277,16 +268,23 @@ static int pm8058_gpios_init(void)
 			.function       = PM_GPIO_FUNC_NORMAL,
 	};
 
-
-	pmic_gpio_hdmi_5v_en = PMIC_GPIO_HDMI_5V_EN_V3 ;
-
 #ifdef CONFIG_MMC_MSM_CARD_HW_DETECTION
+	struct pm8058_gpio sdcc_det = {
+		.direction      = PM_GPIO_DIR_IN,
+		.pull           = PM_GPIO_PULL_UP_1P5,
+		.vin_sel        = 2,
+		.function       = PM_GPIO_FUNC_NORMAL,
+		.inv_int_pol    = 0,
+	};
+
 	rc = pm8058_gpio_config(PMIC_GPIO_SD_DET - 1, &sdcc_det);
 	if (rc) {
 		pr_err("%s PMIC_GPIO_SD_DET config failed\n", __func__);
 		return rc;
 	}
 #endif
+
+	pmic_gpio_hdmi_5v_en = PMIC_GPIO_HDMI_5V_EN_V3 ;
 
 	rc = pm8058_gpio_config(pmic_gpio_hdmi_5v_en, &hdmi_5V_en);
 	if (rc) {
