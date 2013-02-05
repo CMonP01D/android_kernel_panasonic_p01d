@@ -301,23 +301,21 @@ static int pm8058_gpios_init(void)
 		return rc;
 	}
 
-	if (1) {//Yuhaipeng 20110617
-		rc = pm8058_gpio_config(PMIC_GPIO_SDC4_EN_N, &sdc4_en);
-		if (rc) {
-			pr_err("%s PMIC_GPIO_SDC4_EN_N config failed\n",
-								 __func__);
-			return rc;
-		}
-		rc = gpio_request(PM8058_GPIO_PM_TO_SYS(PMIC_GPIO_SDC4_EN_N),
-				  "sdc4_en");
-		if (rc) {
-			pr_err("%s PMIC_GPIO_SDC4_EN_N gpio_request failed\n",
-				__func__);
-			return rc;
-		}
-		gpio_set_value_cansleep(
-			PM8058_GPIO_PM_TO_SYS(PMIC_GPIO_SDC4_EN_N), 0);
+	rc = pm8058_gpio_config(PMIC_GPIO_SDC4_EN_N, &sdc4_en);
+	if (rc) {
+		pr_err("%s PMIC_GPIO_SDC4_EN_N config failed\n",
+							 __func__);
+		return rc;
 	}
+	rc = gpio_request(PM8058_GPIO_PM_TO_SYS(PMIC_GPIO_SDC4_EN_N),
+			  "sdc4_en");
+	if (rc) {
+		pr_err("%s PMIC_GPIO_SDC4_EN_N gpio_request failed\n",
+			__func__);
+		return rc;
+	}
+	gpio_set_value_cansleep(
+		PM8058_GPIO_PM_TO_SYS(PMIC_GPIO_SDC4_EN_N), 0);
 
 	return 0;
 }
