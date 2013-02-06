@@ -42,7 +42,6 @@
 #include <linux/pwm.h>
 #include <linux/pmic8058-pwm.h>
 #include <linux/i2c/tsc2007.h>
-#include <linux/input/kp_flip_switch.h>
 #include <linux/leds-pmic8058.h>
 #include <linux/input/cy8c_ts.h>
 #include <linux/msm_adc.h>
@@ -77,7 +76,6 @@
 #include <linux/i2c-gpio.h>
 #include <linux/spi/spi.h>
 #include <linux/cyttsp.h>
-//#include <linux/Atmel.h>
 #include <linux/atmel_ctp.h>
 
 #define GPIO_CTP_IRQ 112 //for Ponyo Atmel's TP
