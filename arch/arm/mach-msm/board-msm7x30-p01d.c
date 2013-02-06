@@ -143,8 +143,6 @@
 
 #define ADV7520_I2C_ADDR	0x39
 
-#define FPGA_SDCC_STATUS       0x8E0001A8
-
 #define FPGA_OPTNAV_GPIO_ADDR	0x8E000026
 #define OPTNAV_I2C_SLAVE_ADDR	(0xB0 >> 1)
 #define OPTNAV_IRQ		20
@@ -157,8 +155,6 @@
 #define PMIC_GPIO_WLAN_EXT_POR  22 /* PMIC GPIO NUMBER 23 */
 
 #define PMIC_GPIO_QUICKVX_CLK 37 /* PMIC GPIO 38 */
-
-#define	PM_FLIP_MPP 5 /* PMIC MPP 06 */
 
 //[SIMT-caoxiangteng-110715]{
 /*
