@@ -1005,7 +1005,7 @@ static ssize_t cm3623_ps_control_store(struct device *dev, struct device_attribu
 	else
 		rc = -1;
 	mutex_unlock(&sd->lock);
-	return  rc;
+	return rc ? rc : size;
 }
 static DEVICE_ATTR(ps_control, 0220, NULL, cm3623_ps_control_store);
 
