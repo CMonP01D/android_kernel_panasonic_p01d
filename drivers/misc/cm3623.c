@@ -980,7 +980,7 @@ static ssize_t cm3623_ps_control_store(struct device *dev, struct device_attribu
 			}
 		}
 	}
-	if (!(rc = strncmp(buf, "ps_u", 4))) {
+	else if (!(rc = strncmp(buf, "ps_u", 4))) {
 		if (state[CM3623_PS] != CM3623_UP) {
 			state[CM3623_PS] = CM3623_UP;
 			if ((rc = cm3623_up_ps(sd)) < 0) {
