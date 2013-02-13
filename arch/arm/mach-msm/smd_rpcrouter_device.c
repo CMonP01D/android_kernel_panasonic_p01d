@@ -416,7 +416,6 @@ int msm_rpcrouter_create_server_pdev(struct rr_server *server)
 int msm_rpcrouter_init_devices(void)
 {
 	int rc;
-	int major;
 
 	/* Create the device nodes */
 	msm_rpcrouter_class = class_create(THIS_MODULE, "oncrpc");
@@ -436,7 +435,6 @@ int msm_rpcrouter_init_devices(void)
 		goto fail_destroy_class;
 	}
 
-	major = MAJOR(msm_rpcrouter_devno);
 	rpcrouter_device = device_create(msm_rpcrouter_class, NULL,
 					 msm_rpcrouter_devno, NULL, "%.8x:%d",
 					 0, 0);

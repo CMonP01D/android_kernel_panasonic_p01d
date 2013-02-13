@@ -1094,7 +1094,6 @@ static bool rtc_acdb_init(void)
 {
 	struct rtc_acdb_pmem *rtc_read = &rtc_acdb.rtc_read;
 	struct rtc_acdb_pmem *rtc_write = &rtc_acdb.rtc_write;
-	s32 result = 0;
 	char name[sizeof "get_set_abid"+1];
 	char name1[sizeof "get_set_abid_data"+1];
 	rtc_acdb.abid = 0;
@@ -1129,14 +1128,12 @@ static bool rtc_acdb_init(void)
 
 	if (IS_ERR((void *)rtc_read->phys)) {
 		MM_ERR("ACDB Cannot allocate physical memory\n");
-		result = -ENOMEM;
 		goto error;
 	}
 	rtc_read->viraddr = ioremap(rtc_read->phys, PMEM_RTC_ACDB_QUERY_MEM);
 
 	if (rtc_read->viraddr == NULL) {
 		MM_ERR("ACDB Could not map physical address\n");
-		result = -ENOMEM;
 		goto error;
 	}
 	memset(rtc_read->viraddr, 0, PMEM_RTC_ACDB_QUERY_MEM);
@@ -1146,14 +1143,12 @@ static bool rtc_acdb_init(void)
 
 	if (IS_ERR((void *)rtc_write->phys)) {
 		MM_ERR("ACDB Cannot allocate physical memory\n");
-		result = -ENOMEM;
 		goto error;
 	}
 	rtc_write->viraddr = ioremap(rtc_write->phys, PMEM_RTC_ACDB_QUERY_MEM);
 
 	if (rtc_write->viraddr == NULL) {
 		MM_ERR("ACDB Could not map physical address\n");
-		result = -ENOMEM;
 		goto error;
 	}
 	memset(rtc_write->viraddr, 0, PMEM_RTC_ACDB_QUERY_MEM);

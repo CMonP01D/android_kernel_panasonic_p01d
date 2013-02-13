@@ -649,16 +649,10 @@ static int snddev_icodec_set_device_volume_impl(
 		struct msm_snddev_info *dev_info, u32 volume)
 {
 	struct snddev_icodec_state *icodec;
-	u8 afe_path_id;
 
 	int rc = 0;
 
 	icodec = dev_info->private_data;
-
-	if (icodec->data->capability & SNDDEV_CAP_RX)
-		afe_path_id = AFE_HW_PATH_CODEC_RX;
-	else
-		afe_path_id = AFE_HW_PATH_CODEC_TX;
 
 	if (icodec->data->dev_vol_type & SNDDEV_DEV_VOL_DIGITAL) {
 

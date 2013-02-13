@@ -548,7 +548,6 @@ void voice_change_sample_rate(struct voice_data *v)
 static int voice_thread(void *data)
 {
 	struct voice_data *v = (struct voice_data *)data;
-	int rc = 0;
 
 	MM_INFO("voice_thread() start\n");
 
@@ -568,15 +567,15 @@ static int voice_thread(void *data)
 				if (v->dev_state == DEV_READY) {
 					mutex_lock(&voice.voc_lock);
 					voice_change_sample_rate(v);
-					rc = voice_cmd_device_info(v);
-					rc = voice_cmd_acquire_done(v);
+					voice_cmd_device_info(v);
+					voice_cmd_acquire_done(v);
 					v->voc_state = VOICE_ACQUIRE;
 					mutex_unlock(&voice.voc_lock);
 					broadcast_event(
 					AUDDEV_EVT_VOICE_STATE_CHG,
 					VOICE_STATE_INCALL, SESSION_IGNORE);
 				} else {
-					rc = wait_event_interruptible(
+					wait_event_interruptible(
 					v->dev_wait,
 					(v->dev_state == DEV_READY)
 					|| (atomic_read(&v->rel_start_flag)
@@ -594,8 +593,8 @@ static int voice_thread(void *data)
 					} else {
 						mutex_lock(&voice.voc_lock);
 						voice_change_sample_rate(v);
-						rc = voice_cmd_device_info(v);
-						rc = voice_cmd_acquire_done(v);
+						voice_cmd_device_info(v);
+						voice_cmd_acquire_done(v);
 						v->voc_state = VOICE_ACQUIRE;
 						mutex_unlock(&voice.voc_lock);
 						broadcast_event(
@@ -620,7 +619,7 @@ static int voice_thread(void *data)
 					AUDDEV_CLNT_VOC);
 			} else {
 				/* wait for the dev_state = RELEASE */
-				rc = wait_event_interruptible(v->dev_wait,
+				wait_event_interruptible(v->dev_wait,
 					(v->dev_state == DEV_REL_DONE)
 				|| (atomic_read(&v->acq_start_flag) == 1));
 				if (atomic_read(&v->acq_start_flag) == 1)
@@ -645,8 +644,8 @@ static int voice_thread(void *data)
 			if ((v->voc_state == VOICE_ACQUIRE)
 				|| (v->voc_state == VOICE_CHANGE)) {
 				voice_change_sample_rate(v);
-				rc = voice_cmd_device_info(v);
-				rc = voice_cmd_acquire_done(v);
+				voice_cmd_device_info(v);
+				voice_cmd_acquire_done(v);
 			}
 			break;
 		default:

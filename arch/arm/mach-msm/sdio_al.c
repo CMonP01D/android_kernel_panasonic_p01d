@@ -807,7 +807,6 @@ static int read_mailbox(struct sdio_al_device *sdio_al_dev, int from_isr)
 	u32 thresh_pipe = 0;
 	u32 overflow_pipe = 0;
 	u32 underflow_pipe = 0;
-	u32 thresh_intr_mask = 0;
 
 	if (sdio_al_dev->is_err) {
 		SDIO_AL_ERR(__func__);
@@ -831,9 +830,6 @@ static int read_mailbox(struct sdio_al_device *sdio_al_dev, int from_isr)
 			(mailbox->overflow_pipe_8_15<<8);
 	underflow_pipe = mailbox->underflow_pipe_0_7 |
 			(mailbox->underflow_pipe_8_15<<8);
-	thresh_intr_mask =
-		(mailbox->mask_thresh_above_limit_pipe_0_7) |
-		(mailbox->mask_thresh_above_limit_pipe_8_15<<8);
 
 	if (ret) {
 		pr_err(MODULE_NAME ":Fail to read Mailbox for card %d,"

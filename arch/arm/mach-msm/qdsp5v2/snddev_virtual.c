@@ -45,10 +45,6 @@ static int snddev_virtual_close(struct msm_snddev_info *dev_info)
 
 static int snddev_virtual_set_freq(struct msm_snddev_info *dev_info, u32 rate)
 {
-	int rc = 0;
-
-	if (!dev_info)
-		rc = -EINVAL;
 	return rate;
 }
 

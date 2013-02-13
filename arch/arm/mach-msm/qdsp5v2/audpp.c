@@ -387,7 +387,6 @@ void audpp_disable(int id, void *private)
 {
 	struct audpp_state *audpp = &the_audpp_state;
 	unsigned long flags;
-	int rc;
 
 	if (id < -1 || id > 4)
 		return;
@@ -412,7 +411,7 @@ void audpp_disable(int id, void *private)
 		MM_DBG("disable\n");
 		LOG(EV_DISABLE, 2);
 		audpp_dsp_config(0);
-		rc = wait_event_interruptible(audpp->event_wait,
+		wait_event_interruptible(audpp->event_wait,
 				(audpp->enabled == 0));
 		if (audpp->enabled == 0)
 			MM_INFO("Received CFG_MSG_DISABLE from ADSP\n");

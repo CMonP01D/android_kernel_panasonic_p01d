@@ -564,7 +564,6 @@ static void audlpa_async_send_data(struct audio *audio, unsigned needed,
 				uint32_t *payload)
 {
 	unsigned long flags;
-	uint64_t temp = 0;
 
 	spin_lock_irqsave(&audio->dsp_lock, flags);
 	if (!audio->running)
@@ -588,13 +587,11 @@ static void audlpa_async_send_data(struct audio *audio, unsigned needed,
 					CALCULATE_AVSYNC(audio->avsync);
 			}
 			BUG_ON(list_empty(&audio->out_queue));
-			temp = audio->bytecount_head;
 			used_buf = list_first_entry(&audio->out_queue,
 					struct audlpa_buffer_node, list);
 			if ((audio->bytecount_head + used_buf->buf.data_len) <
 				audio->bytecount_consumed) {
 				audio->bytecount_head += used_buf->buf.data_len;
-				temp = audio->bytecount_head;
 				list_del(&used_buf->list);
 				evt_payload.aio_buf = used_buf->buf;
 				audlpa_post_event(audio, AUDIO_EVENT_WRITE_DONE,

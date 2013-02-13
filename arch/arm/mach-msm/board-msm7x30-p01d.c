@@ -2898,15 +2898,13 @@ static struct marimba_platform_data marimba_pdata = {
 
 static void __init msm7x30_init_marimba(void)
 {
-	int rc;
-
 	vreg_marimba_1 = vreg_get(NULL, "s3");
 	if (IS_ERR(vreg_marimba_1)) {
 		printk(KERN_ERR "%s: vreg get failed (%ld)\n",
 			__func__, PTR_ERR(vreg_marimba_1));
 		return;
 	}
-	rc = vreg_set_level(vreg_marimba_1, 1800);
+	vreg_set_level(vreg_marimba_1, 1800);
 
 	vreg_marimba_2 = vreg_get(NULL, "gp16");
 	if (IS_ERR(vreg_marimba_1)) {
@@ -2914,7 +2912,7 @@ static void __init msm7x30_init_marimba(void)
 			__func__, PTR_ERR(vreg_marimba_1));
 		return;
 	}
-	rc = vreg_set_level(vreg_marimba_2, 1200);
+	vreg_set_level(vreg_marimba_2, 1200);
 
 	vreg_marimba_3 = vreg_get(NULL, "usb2");
 	if (IS_ERR(vreg_marimba_3)) {
@@ -2922,7 +2920,7 @@ static void __init msm7x30_init_marimba(void)
 			__func__, PTR_ERR(vreg_marimba_3));
 		return;
 	}
-	rc = vreg_set_level(vreg_marimba_3, 1800);
+	vreg_set_level(vreg_marimba_3, 1800);
 }
 
 static struct marimba_codec_platform_data timpani_codec_pdata = {
@@ -6620,7 +6618,6 @@ static int ctp_power(int on)
 {
 	//static int num = 0;
 	static struct vreg *vreg_12, *vreg_16, *vreg_lvs0;
-	int rc = 0;
  
 	pr_info("ctp_power(): on = %d\n",on);	 
 	
@@ -6643,12 +6640,12 @@ static int ctp_power(int on)
 			
 			vreg_set_level(vreg_16, 2800);
 			vreg_enable(vreg_16);
-			rc = vreg_set_level(vreg_lvs0, 2800);
-			rc = vreg_enable(vreg_lvs0);
+			vreg_set_level(vreg_lvs0, 2800);
+			vreg_enable(vreg_lvs0);
 			msleep(1);
 
-			rc = vreg_set_level(vreg_12, 1800);
-			rc = vreg_enable(vreg_12);
+			vreg_set_level(vreg_12, 1800);
+			vreg_enable(vreg_12);
 			//num++;
 
 		}
