@@ -1657,6 +1657,10 @@ static int msm_batt_cb_func(struct msm_rpc_client *client,
 }
 #endif  /* CONFIG_BATTERY_MSM_FAKE */
 
+#ifdef SIMCUST_POWER_OFF_CHARGE
+static int create_additional_attrs(struct device *dev);
+#endif
+
 static int __devinit msm_batt_probe(struct platform_device *pdev)
 {
 	int rc;
@@ -1732,6 +1736,14 @@ static int __devinit msm_batt_probe(struct platform_device *pdev)
 		return rc;
 	}
 	msm_batt_info.msm_psy_batt = &msm_psy_batt;
+
+#ifdef SIMCUST_POWER_OFF_CHARGE
+	rc = create_additional_attrs(msm_psy_batt.dev);
+	if (rc) {
+		pr_err("%s : Failed to create_attrs\n", __func__);
+		return rc;
+	}
+#endif
 
 #ifndef CONFIG_BATTERY_MSM_FAKE
 	rc = msm_batt_register(BATTERY_LOW, BATTERY_ALL_ACTIVITY,
@@ -2122,6 +2134,87 @@ struct miscdevice  misc_battery =
         .fops = &misc_battery_fops,
 };
 //sunxiaowen add end
+
+enum {
+    CHARGING_MODE_BOOTING,
+};
+
+static ssize_t show_additional_attrs(struct device *dev,
+				     struct device_attribute *attr,
+				     char *buf);
+static ssize_t store_additional_attrs(struct device *dev,
+				      struct device_attribute *attr,
+				      const char *buf, size_t count);
+
+#define ADDITIONAL_ATTR(_name)						\
+{									\
+	.attr = {.name = #_name, .mode = 0664 },			\
+	.show = show_additional_attrs,					\
+	.store = store_additional_attrs,				\
+}
+
+static struct device_attribute additional_attrs[] = {
+	ADDITIONAL_ATTR(charging_mode_booting),
+};
+
+static ssize_t show_additional_attrs(struct device *dev,
+				     struct device_attribute *attr,
+				     char *buf)
+{
+	int i = 0;
+	const ptrdiff_t off = attr - additional_attrs;
+
+	switch (off) {
+	case CHARGING_MODE_BOOTING:
+		i += scnprintf(buf + i, PAGE_SIZE - i, "%d\n", battchg_pause_kernel);
+		break;
+	default:
+		i = -EINVAL;
+	}
+
+	return i;
+}
+
+static ssize_t store_additional_attrs(struct device *dev,
+				      struct device_attribute *attr,
+				      const char *buf, size_t count)
+{
+	int x = 0;
+	int ret = 0;
+	const ptrdiff_t off = attr - additional_attrs;
+
+	switch (off) {
+	case CHARGING_MODE_BOOTING:
+		if (sscanf(buf, "%d\n", &x) == 1) {
+			battchg_pause_kernel = x;
+			ret = count;
+		}
+		break;
+	default:
+		ret = -EINVAL;
+	}
+
+	return ret;
+}
+
+static int create_additional_attrs(struct device *dev)
+{
+	int i, rc;
+
+	for (i = 0; i < ARRAY_SIZE(additional_attrs); i++) {
+		rc = device_create_file(dev, &additional_attrs[i]);
+		if (rc)
+			goto failed;
+	}
+	goto succeed;
+
+failed:
+	while (i--)
+		device_remove_file(dev, &additional_attrs[i]);
+succeed:
+	return rc;
+}
+
 #endif
 
 static int __init msm_batt_init(void)
