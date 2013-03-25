@@ -917,7 +917,7 @@ static void compatible_input_report(struct input_dev *idev,
 		//printk("z = %d, w = %d, x = %d , y =  %d\n", fdata->z, fdata->w, fdata->x, fdata->y);
 		if(fdata->y <= 800){
 			input_report_abs(idev, ABS_MT_TOUCH_MAJOR, fdata->z);
-			input_report_abs(idev, ABS_MT_WIDTH_MAJOR, fdata->z);
+			input_report_abs(idev, ABS_MT_WIDTH_MAJOR, fdata->w);
 			input_report_abs(idev, ABS_MT_POSITION_X, fdata->x);
 			input_report_abs(idev, ABS_MT_POSITION_Y, fdata->y);
 			input_report_abs(idev, ABS_MT_PRESSURE, fdata->z);
