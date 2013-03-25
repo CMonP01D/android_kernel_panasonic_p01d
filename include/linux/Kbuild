@@ -77,6 +77,7 @@ header-y += firewire-cdev.h
 header-y += firewire-constants.h
 header-y += fuse.h
 header-y += genetlink.h
+header-y += genlock.h
 header-y += gen_stats.h
 header-y += gfs2_ondisk.h
 header-y += gigaset_dev.h
