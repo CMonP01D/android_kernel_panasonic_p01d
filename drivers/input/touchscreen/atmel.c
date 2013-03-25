@@ -910,15 +910,18 @@ static void compatible_input_report(struct input_dev *idev,
 	if (!press){
 		//printk("!press\n");
 		input_report_abs(idev, ABS_MT_TOUCH_MAJOR, 0);
+		input_report_key(idev, BTN_TOUCH, 0);
 		//VrpCallback(TouchSampleValidFlag, 0, 0); //[simt-zhanghui-110830]
 	}
 	else {
 		//printk("z = %d, w = %d, x = %d , y =  %d\n", fdata->z, fdata->w, fdata->x, fdata->y);
 		if(fdata->y <= 800){
 			input_report_abs(idev, ABS_MT_TOUCH_MAJOR, fdata->z);
-			input_report_abs(idev, ABS_MT_WIDTH_MAJOR, fdata->w);
+			input_report_abs(idev, ABS_MT_WIDTH_MAJOR, fdata->z);
 			input_report_abs(idev, ABS_MT_POSITION_X, fdata->x);
 			input_report_abs(idev, ABS_MT_POSITION_Y, fdata->y);
+			input_report_abs(idev, ABS_MT_PRESSURE, fdata->z);
+			input_report_key(idev, BTN_TOUCH, 1);
 			input_mt_sync(idev);
 		}
 		//[simt-zhanghui-110830]{
@@ -1369,6 +1372,9 @@ static int atmel_ts_probe(struct i2c_client *client,
 				0, 0);
 	input_set_abs_params(ts->input_dev, ABS_MT_WIDTH_MAJOR,
 				ts->abs_width_min, ts->abs_width_max, 0, 0);
+	input_set_abs_params(ts->input_dev, ABS_MT_PRESSURE,
+				ts->abs_pressure_min, ts->abs_pressure_max,
+				0, 0);
 	ret = input_register_device(ts->input_dev);
 	if (ret) {
 		dev_err(&client->dev,
